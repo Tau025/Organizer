@@ -1,0 +1,40 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
+
+    defaultConfig {
+        applicationId "com.devtau.organizer"
+        minSdkVersion 16
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+
+        jackOptions {
+            enabled true
+        }
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.squareup:android-times-square:1.6.5'//календарь
+    compile 'com.github.flavienlaurent.datetimepicker:library:0.0.2'//диалог ввода даты-времени
+
+    compile 'com.android.support:recyclerview-v7:24.0.0'//убрать
+    compile 'com.android.support:cardview-v7:24.0.0'//убрать
+    compile project(path: ':recyclerviewlib')
+}

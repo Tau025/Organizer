@@ -1,0 +1,16 @@
+<resources>
+    <string name="add">Добавить</string>
+    <string name="new_item">Новый элемент:</string>
+
+    <string name="sort">Сорт.:</string>
+    <string name="price">цена</string>
+    <string name="description">описание</string>
+
+    <!--enum для вариантов сортировки по умолчанию-->
+    <string name="first_fresh">сначала свежие</string>
+    <string name="first_old">сначала старые</string>
+    <string name="first_higher_price">сначала высокая цена</string>
+    <string name="first_lower_price">сначала низкая цена</string>
+    <string name="alphabetical">А - Я</string>
+    <string name="rev_alphabetical">Я - А</string>
+</resources>

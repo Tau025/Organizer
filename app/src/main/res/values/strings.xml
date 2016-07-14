@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Органайзер</string>
+    <string name="action_settings">Настройки</string>
+    <string name="photoSessionsList">Список фотосессий</string>
+    <string name="photoSessionsListTitleFormatter" formatted="false">Список фотосессий на %02d.%02d.%02d</string>
+    <string name="transactionsList">Список транзакций</string>
+    <string name="transactionDetails">Подробности по транзакции</string>
+    <string name="transactionAmount">сумма</string>
+    <string name="transactionComment">комментарий</string>
+    <string name="photoSessionDetails">Подробности фотосессии</string>
+    <string name="photoSession">Задача</string>
+    <string name="newPhotoSession">Новая фотосессия</string>
+
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отменить</string>
+
+    <string name="choose_client">Выберите клиента</string>
+
+    <string name="deleteConfirm">Точно удалить?</string>
+    <string name="photoSessionDeletedMSG">Фотосессия удалена</string>
+    <string name="transactionDeletedMSG">Оплата удалена</string>
+
+    <string name="currentTime" formatted="false">Текущее время: %02d:%02d:%02d</string>
+
+    <!--enum для клиентских вариантов сортировки-->
+    <string name="first_fresh">сначала свежие</string>
+    <string name="first_old">сначала старые</string>
+    <string name="first_higher_price">сначала высокая цена</string>
+    <string name="first_lower_price">сначала низкая цена</string>
+    <string name="alphabetical">А - Я</string>
+    <string name="rev_alphabetical">Я - А</string>
+
+    <string name="integerFormatException">вводите только цифры. не больше 2 147 483 647</string>
+    <string name="doubleFormatException">вводите только цифры</string>
+    <string name="dateError1">Ошибка. Дата съемки не может быть позже даты дедлайна</string>
+    <string name="dateError2">Ошибка. Дата дедлайна не может быть раньше даты съемки</string>
+    <string name="date_time_and_price_formatter" formatted="false">дата %s, цена %d</string>
+    <string name="clientPhone">тел.:</string>
+    <string name="clientAddress">адрес:</string>
+    <string name="clientSocial">соц.сеть:</string>
+    <string name="clientEmail">email:</string>
+
+    <string name="receivedFormatter" formatted="false">%s получено: %d</string>
+    <string name="transactionToStringFormatter" formatted="false">дата: %s, сумма: %d, комментарий: %s</string>
+
+
+    <string-array name="photo_session_type">
+        <item>репортаж</item>
+        <item>свадьба</item>
+        <item>студия</item>
+        <item>выписка</item>
+        <item>предметная</item>
+        <item>интерьерная</item>
+    </string-array>
+</resources>

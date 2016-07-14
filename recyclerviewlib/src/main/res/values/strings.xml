@@ -1,0 +1,16 @@
+<resources>
+    <string name="add">Add</string>
+    <string name="new_item">New item:</string>
+
+    <string name="sort">Sort:</string>
+    <string name="price">price</string>
+    <string name="description">description</string>
+
+    <!--enum для вариантов сортировки по умолчанию-->
+    <string name="first_fresh">first fresh</string>
+    <string name="first_old">first old</string>
+    <string name="first_higher_price">first higher price</string>
+    <string name="first_lower_price">first lower price</string>
+    <string name="alphabetical">A - Z</string>
+    <string name="rev_alphabetical">Z - A</string>
+</resources>

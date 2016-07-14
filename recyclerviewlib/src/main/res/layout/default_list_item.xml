@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    card_view:cardCornerRadius="2dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
+        <TextView
+            android:id="@+id/tvMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/btnDelete"
+            android:layout_toStartOf="@+id/btnDelete"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvAdditional1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_below="@+id/tvMain"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp" />
+
+        <TextView
+            android:id="@+id/tvAdditional2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_below="@+id/tvMain"
+            android:layout_toRightOf="@+id/tvAdditional1"
+            android:layout_toEndOf="@+id/tvAdditional1"
+            android:layout_toLeftOf="@+id/btnDelete"
+            android:layout_toStartOf="@+id/btnDelete"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp" />
+
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@android:drawable/ic_menu_delete"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
+
+    <!--CardView расширяет FrameLayout-->
