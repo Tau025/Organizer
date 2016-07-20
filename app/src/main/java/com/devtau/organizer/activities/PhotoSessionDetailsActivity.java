@@ -7,11 +7,11 @@ import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -22,7 +22,6 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.devtau.organizer.R;
 import com.devtau.organizer.database.DataSource;
 import com.devtau.organizer.fragments.DateTimeButtonsFrag;
@@ -32,7 +31,6 @@ import com.devtau.organizer.model.Client;
 import com.devtau.organizer.model.PhotoSession;
 import com.devtau.organizer.util.Logger;
 import com.devtau.organizer.util.Util;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -42,6 +40,7 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         SingleChoiceListDFInterface {
     public static final String PHOTO_SESSION_EXTRA = "PhotoSessionExtra";
     public static final String CLIENT_EXTRA = "ClientExtra";
+    private static final String LOG_TAG = PhotoSessionDetailsActivity.class.getSimpleName();
     private PhotoSession photoSession;
     private Client client;
 
@@ -75,6 +74,7 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
             client = dataSource.getClientsSource().getItemByID(photoSession.getClientID());
         }
 
+        Util.hideSoftKeyboard(this);
         initControls();
 
         insertStartDateTimeButtonsFrag(photoSession.getPhotoSessionDate());
@@ -429,9 +429,9 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         switch (view.getId()){
             case R.id.btnClientDetails:
                 if(expandableClientDetails.getLayoutParams().height == 0) {
-                    animate(expandableClientDetails, moveableLayout, 500, 0, 350);
+                    animate(expandableClientDetails, moveableLayout, 500, 0, 200);
                 } else {
-                    animate(expandableClientDetails, moveableLayout, 500, 0, -350);
+                    animate(expandableClientDetails, moveableLayout, 500, 0, -200);
                 }
                 break;
 
@@ -485,6 +485,10 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
 
     private void animate(final View scalableView, final View moveableView,
                          int duration, int fromYDelta, int toYDelta) {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        Logger.d(LOG_TAG, "metrics.density: " + String.valueOf(metrics.density));
+        fromYDelta *= metrics.density;
+        toYDelta *= metrics.density;
         final int scalableViewHeight = scalableView.getHeight() + toYDelta - fromYDelta;
 
         ObjectAnimator mover = ObjectAnimator.ofFloat(moveableView, "translationY", (float) fromYDelta, (float) toYDelta);
@@ -547,7 +551,7 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
                 }
                 break;
         }
-        Logger.d("startDate: " + Util.dateFormat.format(photoSession.getPhotoSessionDate().getTime()) +
+        Logger.d(LOG_TAG, "startDate: " + Util.dateFormat.format(photoSession.getPhotoSessionDate().getTime()) +
                 ", endDate: " + Util.dateFormat.format(photoSession.getDeadline().getTime()));
     }
 

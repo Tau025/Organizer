@@ -21,6 +21,7 @@ import static com.devtau.organizer.database.tables.ClientsTable.*;
  */
 public class ClientsSource {
     private static final String ERROR_TOAST = "db access error";
+    private static final String LOG_TAG = ClientsSource.class.getSimpleName();
     private MySQLHelper dbHelper;
     private Context context;
 
@@ -99,7 +100,7 @@ public class ClientsSource {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        Logger.d("ClientsSource.getClientsList() list.size(): " + String.valueOf(list.size()));
+        Logger.d(LOG_TAG, "ClientsSource.getClientsList() list.size(): " + String.valueOf(list.size()));
         return list;
     }
 }

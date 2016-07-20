@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EditTransactionDF extends DialogFragment {
-    public static final String FRAGMENT_TAG = "EditTransactionDF";
+    public static final String FRAGMENT_TAG = EditTransactionDF.class.getSimpleName();
+    private static final String LOG_TAG = EditTransactionDF.class.getSimpleName();
     private EditText etAmount;
     private EditText etComment;
     private onAddNewItemDFListener listener;
@@ -23,7 +24,7 @@ public class EditTransactionDF extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         //если фрагмент является вложенным, context - это активность, держащая фрагмент-родитель, а не сам родитель
-        Logger.d("ItemFragment.onAttach()");
+        Logger.d(LOG_TAG, "ItemFragment.onAttach()");
         super.onAttach(context);
         try {
             //проверим, реализован ли нужный интерфейс родительским фрагментом или активностью

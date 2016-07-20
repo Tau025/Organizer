@@ -1,12 +1,10 @@
 package com.devtau.organizer.activities;
 
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.devtau.organizer.R;
 import com.devtau.organizer.database.DataSource;
 import com.devtau.organizer.fragments.ConfirmDeleteDF;
@@ -15,12 +13,10 @@ import com.devtau.organizer.model.PhotoSession;
 import com.devtau.organizer.model.Transaction;
 import com.devtau.organizer.model.TransactionComparators;
 import com.devtau.organizer.util.Constants;
-import com.devtau.organizer.util.Logger;
 import com.devtau.organizer.util.Util;
 import com.devtau.recyclerviewlib.MyItemRVAdapter;
 import com.devtau.recyclerviewlib.RVHelper;
 import com.devtau.recyclerviewlib.RVHelperInterface;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

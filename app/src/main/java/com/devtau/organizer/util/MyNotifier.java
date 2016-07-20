@@ -15,6 +15,7 @@ import java.util.Calendar;
  *
  */
 public class MyNotifier {
+    private static final String LOG_TAG = MyNotifier.class.getSimpleName();
     private int notifyId = 0;//недоступно извне
 
     private Intent[] intentStack;
@@ -64,19 +65,19 @@ public class MyNotifier {
 
     private boolean isParamNotNull(Object parameter) {
         if(parameter instanceof Boolean) {
-            Logger.d("Boolean");
+            Logger.d(LOG_TAG, "Boolean");
             return true;
         }
         else if(parameter instanceof Integer) {
-            Logger.d("Integer");
+            Logger.d(LOG_TAG, "Integer");
             return 0 != (int) parameter;
         }
         else if(parameter instanceof String) {
-            Logger.d("String");
+            Logger.d(LOG_TAG, "String");
             return !"".equals(parameter);
         }
         else {
-            Logger.d("Object: Calendar, Intent[], long[], Uri");
+            Logger.d(LOG_TAG, "Object: Calendar, Intent[], long[], Uri");
             return null != parameter;
         }
     }

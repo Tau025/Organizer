@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class DataSource {
+    private static final String LOG_TAG = DataSource.class.getSimpleName();
     private PhotoSessionsSource photoSessionsSource;
     private RemindersSource remindersSource;
     private TransactionsSource transactionsSource;
@@ -103,7 +104,7 @@ public class DataSource {
         Calendar mockReminderDate2 = mockReminderDate1;
         mockReminderDate2.add(Calendar.MINUTE, -5);
 
-        Logger.d("photoSession.getTaskID(): " + String.valueOf(photoSession.getPhotoSessionID()));
+        Logger.d(LOG_TAG, "photoSession.getTaskID(): " + String.valueOf(photoSession.getPhotoSessionID()));
         //создадим Reminder
         Reminder mockReminder1 = new Reminder(photoSession.getPhotoSessionID(), mockReminderDate1, "photoSession end date");
         Reminder mockReminder2 = new Reminder(photoSession.getPhotoSessionID(), mockReminderDate2, "5min to photoSession end");

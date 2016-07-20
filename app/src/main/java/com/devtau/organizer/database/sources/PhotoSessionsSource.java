@@ -21,6 +21,7 @@ import static com.devtau.organizer.database.tables.PhotoSessionsTable.*;
  */
 public class PhotoSessionsSource {
     private static final String ERROR_TOAST = "db access error";
+    private static final String LOG_TAG = PhotoSessionsSource.class.getSimpleName();
     private MySQLHelper dbHelper;
     private Context context;
 
@@ -184,7 +185,7 @@ public class PhotoSessionsSource {
         String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE "
                 + DEADLINE + ">='" + Util.dateFormat.format(startOfMinute.getTime()) + "' AND "
                 + DEADLINE + "<'" + Util.dateFormat.format(endOfMinute.getTime()) + "'";
-        Logger.d("selectQuery: " + String.valueOf(selectQuery));
+        Logger.d(LOG_TAG, "selectQuery: " + String.valueOf(selectQuery));
 
         try {
             SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -201,7 +202,7 @@ public class PhotoSessionsSource {
             } while (cursor.moveToNext());
         }
 
-        Logger.d("tasksList: " + String.valueOf(tasksList));
+        Logger.d(LOG_TAG, "tasksList: " + String.valueOf(tasksList));
         return tasksList;
     }
 }

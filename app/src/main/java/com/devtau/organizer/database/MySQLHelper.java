@@ -14,6 +14,7 @@ import com.devtau.organizer.util.Logger;
 
 public class MySQLHelper extends SQLiteOpenHelper {
     //helper is one no matter how much tables there are
+    private static final String LOG_TAG = MySQLHelper.class.getSimpleName();
     private static final String DB_NAME = "OrganizerDB";
     private static final int DB_VERSION = 1;
     private static MySQLHelper instance;
@@ -38,12 +39,12 @@ public class MySQLHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         updateMyDatabase(db, 0, DB_VERSION);
-        Logger.d("MySQLHelper: onCreate");
+        Logger.d(LOG_TAG, "MySQLHelper: onCreate");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Logger.d("Found new DB version. About to update to: " + String.valueOf(DB_VERSION));
+        Logger.d(LOG_TAG, "Found new DB version. About to update to: " + String.valueOf(DB_VERSION));
         updateMyDatabase(db, oldVersion, newVersion);
     }
 

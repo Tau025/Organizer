@@ -66,8 +66,10 @@ public class CalendarActivity extends AppCompatActivity {
     private void refreshHighlightedDates() {
         ArrayList<Date> datesWithTasks = new ArrayList<>();
         for (PhotoSession photoSession : dataSource.getPhotoSessionsSource().getItemsList()) {
-            Date newDate = new Date(photoSession.getPhotoSessionDate().getTimeInMillis());
-            if(!datesWithTasks.contains(newDate)) {
+            Calendar photoSessionDate = photoSession.getPhotoSessionDate();
+            Date newDate = new Date(photoSessionDate.getTimeInMillis());
+            Calendar now = Calendar.getInstance();
+            if(photoSessionDate.after(now) && !datesWithTasks.contains(newDate)) {
                 datesWithTasks.add(newDate);
             }
         }
