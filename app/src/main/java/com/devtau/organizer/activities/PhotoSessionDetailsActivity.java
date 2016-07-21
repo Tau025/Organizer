@@ -4,7 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -25,19 +27,17 @@ import android.widget.Toast;
 import com.devtau.organizer.R;
 import com.devtau.organizer.database.DataSource;
 import com.devtau.organizer.fragments.DateTimeButtonsFrag;
-import com.devtau.organizer.fragments.SingleChoiceListDF;
-import com.devtau.organizer.fragments.SingleChoiceListDF.SingleChoiceListDFInterface;
 import com.devtau.organizer.model.Client;
 import com.devtau.organizer.model.PhotoSession;
+import com.devtau.organizer.util.Constants;
+import com.devtau.organizer.util.ContactParser;
 import com.devtau.organizer.util.Logger;
 import com.devtau.organizer.util.Util;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         View.OnClickListener,
-        DateTimeButtonsFrag.DateTimeButtonsInterface,
-        SingleChoiceListDFInterface {
+        DateTimeButtonsFrag.DateTimeButtonsInterface {
     public static final String PHOTO_SESSION_EXTRA = "PhotoSessionExtra";
     public static final String CLIENT_EXTRA = "ClientExtra";
     private static final String LOG_TAG = PhotoSessionDetailsActivity.class.getSimpleName();
@@ -71,7 +71,7 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         if(photoSession.getClientID() == 0) {
             client = new Client();
         } else {
-            client = dataSource.getClientsSource().getItemByID(photoSession.getClientID());
+            client = ContactParser.getContactInfoById(String.valueOf(photoSession.getClientID()), this);
         }
 
         Util.hideSoftKeyboard(this);
@@ -436,7 +436,9 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.btnChooseClient:
-                openClientsList();
+                Intent select = new Intent(Intent.ACTION_PICK);
+                select.setData(ContactsContract.Contacts.CONTENT_URI);
+                startActivityForResult(select, Constants.REQUEST_CODE);
                 break;
 
             case R.id.btnAccountingDetails:
@@ -453,15 +455,16 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
                     dataSource.getPhotoSessionsSource().update(photoSession);
                 }
 
+                //TODO: сохранять данные клиента
                 //сохраним нового клиента или обновим старого только если у него есть имя
-                if(!"".equals(client.getName())) {
-//                    Logger.d("client.getName(): " + String.valueOf(client.getName()));
-                    if (client.getClientID() == -1) {
-                        client.setClientID(dataSource.getClientsSource().create(client));
-                    } else {
-                        dataSource.getClientsSource().update(client);
-                    }
-                }
+//                if(!"".equals(client.getName())) {
+////                    Logger.d("client.getName(): " + String.valueOf(client.getName()));
+//                    if (client.getClientID() == -1) {
+//                        client.setClientID(dataSource.getClientsSource().create(client));
+//                    } else {
+//                        dataSource.getClientsSource().update(client);
+//                    }
+//                }
 
                 //вернемся в CalendarActivity
                 Util.notifyBroadcastListeners(this);
@@ -474,13 +477,14 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         }
     }
 
-    private void openClientsList() {
-        SingleChoiceListDF dialog = new SingleChoiceListDF();
-        Bundle args = new Bundle();
-        ArrayList<Client> clientsList = dataSource.getClientsSource().getClientsList();
-        args.putParcelableArrayList(SingleChoiceListDF.ARG_ITEMS_LIST, clientsList);
-        dialog.setArguments(args);
-        dialog.show(getSupportFragmentManager(), SingleChoiceListDF.FRAGMENT_TAG);
+    @Override
+    public void onActivityResult(int reqCode, int resultCode, Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+        if (reqCode == Constants.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            client = ContactParser.getContactInfo(data, this);
+            photoSession.setClientID(client.getClientID());
+            populateClientDetails(client);
+        }
     }
 
     private void animate(final View scalableView, final View moveableView,
@@ -553,12 +557,5 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         }
         Logger.d(LOG_TAG, "startDate: " + Util.dateFormat.format(photoSession.getPhotoSessionDate().getTime()) +
                 ", endDate: " + Util.dateFormat.format(photoSession.getDeadline().getTime()));
-    }
-
-    @Override
-    public void processListItem(Client client) {
-        this.client = client;
-        photoSession.setClientID(client.getClientID());
-        populateClientDetails(client);
     }
 }

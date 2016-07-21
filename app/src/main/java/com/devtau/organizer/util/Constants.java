@@ -5,4 +5,5 @@ public abstract class Constants {
     public static final String OBJECT_ID_EXTRA = "objectIDExtra";
     public static final String POSITION_EXTRA = "positionExtra";
     public static final String BROADCAST_REFRESH_TAG = "com.devtau.organizer.util.broadcastRefreshTag";
+    public static final int REQUEST_CODE = 1;
 }

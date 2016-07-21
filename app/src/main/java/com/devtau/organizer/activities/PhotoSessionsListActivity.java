@@ -18,6 +18,8 @@ import com.devtau.organizer.fragments.ConfirmDeleteDF;
 import com.devtau.organizer.model.PhotoSession;
 import com.devtau.organizer.model.PhotoSessionComparators;
 import com.devtau.organizer.util.Constants;
+import com.devtau.organizer.util.ContactParser;
+import com.devtau.organizer.util.Logger;
 import com.devtau.organizer.util.Util;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,7 +33,7 @@ import com.devtau.recyclerviewlib.RVHelperInterface;
 public class PhotoSessionsListActivity extends AppCompatActivity implements
         RVHelperInterface,
         ConfirmDeleteDF.ConfirmDeleteDFListener<PhotoSession> {
-    private static final String ARG_INDEX_OF_SORT_METHOD = "indexOfSortMethod";
+    private static final String LOG_TAG = PhotoSessionsListActivity.class.getSimpleName();
     private DataSource dataSource;
     private BroadcastReceiver receiver;
     private RVHelper rvHelper;
@@ -110,16 +112,16 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
     public void onBindViewHolder(MyItemRVAdapter.ViewHolder holder, final int rvHelperId) {
         //здесь выбираем, какие поля хранимого объекта отобразятся в каких частях CardView
         //TextView в разметке по умолчанию такие: tvMain, tvAdditional1, tvAdditional2
-        final PhotoSession item = (PhotoSession) holder.getItem();
+        final PhotoSession photoSession = (PhotoSession) holder.getItem();
 
         String clientName = "client not defined";
-        if(item.getClientID() != 0) {
-            clientName = dataSource.getClientsSource().getItemByID(item.getClientID()).getName();
+        if(photoSession.getClientID() != -1) {
+            clientName = ContactParser.getName(String.valueOf(photoSession.getClientID()), getContentResolver());
         }
         ((TextView) holder.getView().findViewById(R.id.tvMain)).setText(clientName);
         Locale locale = getResources().getConfiguration().locale;
         String additionalText = String.format(locale, getResources().getString(R.string.date_time_and_price_formatter),
-                Util.getStringDateTimeFromCal(item.getPhotoSessionDate()), item.getTotalCost());
+                Util.getStringDateTimeFromCal(photoSession.getPhotoSessionDate()), photoSession.getTotalCost());
         ((TextView) holder.getView().findViewById(R.id.tvAdditional1)).setText(additionalText);
         ImageButton btnDelete = ((ImageButton) holder.getView().findViewById(R.id.btnDelete));
 
@@ -127,13 +129,13 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
         holder.getView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onListItemClick(item, 0, rvHelperId);
+                onListItemClick(photoSession, 0, rvHelperId);
             }
         });
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onListItemClick(item, 1, rvHelperId);
+                onListItemClick(photoSession, 1, rvHelperId);
             }
         });
     }

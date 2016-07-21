@@ -9,8 +9,8 @@ public class PhotoSessionComparators {
     public static Comparator<PhotoSession> FIRST_OLD = new Comparator<PhotoSession>() {
         @Override
         public int compare(PhotoSession first, PhotoSession second) {
-            long firstLong = first.getDeadline().getTimeInMillis();
-            long secondLong = second.getDeadline().getTimeInMillis();
+            long firstLong = first.getPhotoSessionDate().getTimeInMillis();
+            long secondLong = second.getPhotoSessionDate().getTimeInMillis();
             int result;
             if (firstLong < secondLong) result = -1;
             else if (firstLong == secondLong) result = 0;

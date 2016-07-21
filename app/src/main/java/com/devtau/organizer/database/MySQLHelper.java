@@ -5,8 +5,6 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
-
-import com.devtau.organizer.database.tables.ClientsTable;
 import com.devtau.organizer.database.tables.RemindersTable;
 import com.devtau.organizer.database.tables.PhotoSessionsTable;
 import com.devtau.organizer.database.tables.TransactionsTable;
@@ -55,7 +53,6 @@ public class MySQLHelper extends SQLiteOpenHelper {
                 db.execSQL(getCreateSql(PhotoSessionsTable.TABLE_NAME, PhotoSessionsTable.FIELDS));
                 db.execSQL(getCreateSql(RemindersTable.TABLE_NAME, RemindersTable.FIELDS));
                 db.execSQL(getCreateSql(TransactionsTable.TABLE_NAME, TransactionsTable.FIELDS));
-                db.execSQL(getCreateSql(ClientsTable.TABLE_NAME, ClientsTable.FIELDS));
             }
             if (oldVersion < 2) {
 //                db.execSQL("ALTER TABLE " + BillingsTable.TABLE_NAME + " ADD COLUMN " + BillingsTable.FAVORITE + " NUMERIC;");
@@ -78,7 +75,6 @@ public class MySQLHelper extends SQLiteOpenHelper {
             db.execSQL(getDropSql(PhotoSessionsTable.TABLE_NAME));
             db.execSQL(getDropSql(RemindersTable.TABLE_NAME));
             db.execSQL(getDropSql(TransactionsTable.TABLE_NAME));
-            db.execSQL(getDropSql(ClientsTable.TABLE_NAME));
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
