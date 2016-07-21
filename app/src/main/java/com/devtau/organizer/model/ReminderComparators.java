@@ -13,28 +13,42 @@ import java.util.HashMap;
  * ответ <0 говорит о том, что сравнение не прошло проверку и нужна перестановка
  */
 public class ReminderComparators {
-    public static Comparator<Reminder> FIRST_FRESH = (first, second) -> {
-        long firstLong = first.getDate().getTimeInMillis();
-        long secondLong = second.getDate().getTimeInMillis();
-        int result;
-        if (secondLong < firstLong) result = -1;
-        else if (firstLong == secondLong) result = 0;
-        else result = 1;
-        return result;
+    public static Comparator<Reminder> FIRST_FRESH = new Comparator<Reminder>() {
+        @Override
+        public int compare(Reminder first, Reminder second) {
+            long firstLong = first.getDate().getTimeInMillis();
+            long secondLong = second.getDate().getTimeInMillis();
+            int result;
+            if (secondLong < firstLong) result = -1;
+            else if (firstLong == secondLong) result = 0;
+            else result = 1;
+            return result;
+        }
     };
-    public static Comparator<Reminder> FIRST_OLD = (first, second) -> {
-        long firstLong = first.getDate().getTimeInMillis();
-        long secondLong = second.getDate().getTimeInMillis();
-        int result;
-        if (firstLong < secondLong) result = -1;
-        else if (firstLong == secondLong) result = 0;
-        else result = 1;
-        return result;
+    public static Comparator<Reminder> FIRST_OLD = new Comparator<Reminder>() {
+        @Override
+        public int compare(Reminder first, Reminder second) {
+            long firstLong = first.getDate().getTimeInMillis();
+            long secondLong = second.getDate().getTimeInMillis();
+            int result;
+            if (firstLong < secondLong) result = -1;
+            else if (firstLong == secondLong) result = 0;
+            else result = 1;
+            return result;
+        }
     };
-    public static Comparator<Reminder> ALPHABETICAL =
-            (first, second) -> first.getDescription().compareTo(second.getDescription());
-    public static Comparator<Reminder> REV_ALPHABETICAL =
-            (first, second) -> second.getDescription().compareTo(first.getDescription());
+    public static Comparator<Reminder> ALPHABETICAL = new Comparator<Reminder>() {
+        @Override
+        public int compare(Reminder first, Reminder second) {
+            return first.getDescription().compareTo(second.getDescription());
+        }
+    };
+    public static Comparator<Reminder> REV_ALPHABETICAL = new Comparator<Reminder>() {
+        @Override
+        public int compare(Reminder first, Reminder second) {
+            return second.getDescription().compareTo(first.getDescription());
+        }
+    };
 
     //альтернатива без лямбды
 //        public static Comparator<PhotoSession> FIRST_LOWER_PRICE = new Comparator<PhotoSession>() {

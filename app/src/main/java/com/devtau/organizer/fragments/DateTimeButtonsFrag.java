@@ -19,6 +19,7 @@ public class DateTimeButtonsFrag extends Fragment implements
         TimePickerDialog.OnTimeSetListener{
     public static final String FRAGMENT_START_TAG = "StartDateTimeButtons";
     public static final String FRAGMENT_END_TAG = "EndDateTimeButtons";
+    public static final String FRAGMENT_TRANSACTION_TIME_TAG = "TransactionTimeDateTimeButtons";
     public static final String DATE_TIME_EXTRA = "dateTimeExtra";
     public static final String FRAGMENT_ID_EXTRA = "fragmentIDExtra";
     private DateTimeButtonsInterface mListener;
@@ -69,22 +70,28 @@ public class DateTimeButtonsFrag extends Fragment implements
         View rootView = inflater.inflate(R.layout.fragment_date_time_buttons, container, false);
 
         btnDate = (Button) rootView.findViewById(R.id.btnDate);
-        btnDate.setOnClickListener(v -> {
-            DatePickerDialog datePD = DatePickerDialog.newInstance(dateSetListener,
-                    dateTimeLocal.get(Calendar.YEAR), dateTimeLocal.get(Calendar.MONTH), dateTimeLocal.get(Calendar.DAY_OF_MONTH), false);
-            datePD.setVibrate(false);
-            datePD.setYearRange(2016, 2020);
-            datePD.setCloseOnSingleTapDay(true);
-            datePD.show(getChildFragmentManager(), "datepicker");
+        btnDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatePickerDialog datePD = DatePickerDialog.newInstance(dateSetListener,
+                        dateTimeLocal.get(Calendar.YEAR), dateTimeLocal.get(Calendar.MONTH), dateTimeLocal.get(Calendar.DAY_OF_MONTH), false);
+                datePD.setVibrate(false);
+                datePD.setYearRange(2016, 2020);
+                datePD.setCloseOnSingleTapDay(true);
+                datePD.show(getChildFragmentManager(), "datepicker");
+            }
         });
 
         btnTime = (Button) rootView.findViewById(R.id.btnTime);
-        btnTime.setOnClickListener(v -> {
-            TimePickerDialog timePD = TimePickerDialog.newInstance(timeSetListener,
-                    dateTimeLocal.get(Calendar.HOUR_OF_DAY), dateTimeLocal.get(Calendar.MINUTE), true, false);
-            timePD.setVibrate(false);
-            timePD.setCloseOnSingleTapMinute(singleTapTimePick);
-            timePD.show(getChildFragmentManager(), "timepicker");
+        btnTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimePickerDialog timePD = TimePickerDialog.newInstance(timeSetListener,
+                        dateTimeLocal.get(Calendar.HOUR_OF_DAY), dateTimeLocal.get(Calendar.MINUTE), true, false);
+                timePD.setVibrate(false);
+                timePD.setCloseOnSingleTapMinute(singleTapTimePick);
+                timePD.show(getChildFragmentManager(), "timepicker");
+            }
         });
         setDateTime(dateTimeLocal);
         return rootView;

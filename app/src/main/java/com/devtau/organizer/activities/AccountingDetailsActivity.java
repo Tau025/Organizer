@@ -2,11 +2,13 @@ package com.devtau.organizer.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.devtau.organizer.R;
 import com.devtau.organizer.database.DataSource;
+import com.devtau.organizer.database.sources.TransactionsSource;
 import com.devtau.organizer.fragments.ConfirmDeleteDF;
 import com.devtau.organizer.fragments.EditTransactionDF;
 import com.devtau.organizer.model.PhotoSession;
@@ -25,10 +27,10 @@ import java.util.Locale;
 public class AccountingDetailsActivity extends AppCompatActivity implements
         RVHelperInterface,
         ConfirmDeleteDF.ConfirmDeleteDFListener<Transaction>,
-        EditTransactionDF.onAddNewItemDFListener{
+        EditTransactionDF.onEditTransactionDFListener {
     private PhotoSession photoSession;
     private RVHelper rvHelper;
-    private DataSource dataSource;
+    private TransactionsSource transactionsSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +43,7 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
             photoSession = savedInstanceState.getParcelable(PhotoSessionDetailsActivity.PHOTO_SESSION_EXTRA);
         }
 
-        dataSource = new DataSource(this);
+        transactionsSource = new DataSource(this).getTransactionsSource();
 
         initRecycler(photoSession);
     }
@@ -49,7 +51,7 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
     private void initRecycler(PhotoSession currentPhotoSession) {
         if(photoSession == null) return;
         //запросим из бд список, который нам нужно показать
-        ArrayList<Transaction> itemsList = dataSource.getTransactionsSource()
+        ArrayList<Transaction> itemsList = transactionsSource
                 .getTransactionsListForAPhotoSession(currentPhotoSession);
 
         //соберем из подготовленных вводных данных хелпер
@@ -61,7 +63,7 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onBindViewHolder(MyItemRVAdapter.ViewHolder holder, int rvHelperId) {
+    public void onBindViewHolder(MyItemRVAdapter.ViewHolder holder, final int rvHelperId) {
         //здесь выбираем, какие поля хранимого объекта отобразятся в каких частях CardView
         //TextView в разметке по умолчанию такие: tvMain, tvAdditional1, tvAdditional2
         final Transaction item = (Transaction) holder.getItem();
@@ -76,25 +78,35 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
         ImageButton btnDelete = ((ImageButton) holder.getView().findViewById(R.id.btnDelete));
 
         //здесь устанавливаем слушатели
-        holder.getView().setOnClickListener(view -> onListItemClick(item, 0, rvHelperId));
-        btnDelete.setOnClickListener(view -> onListItemClick(item, 1, rvHelperId));
+        holder.getView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onListItemClick(item, 0, rvHelperId);
+            }
+        });
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onListItemClick(item, 1, rvHelperId);
+            }
+        });
     }
 
     private void onListItemClick(Transaction item, int clickedActionId, int rvHelperId) {
         switch (clickedActionId) {
-            case 0://клик по строке. просто покажем тост, по чему мы кликнули
-                //TODO: сделать
-                String msg = item.toString(getApplicationContext());
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-
-                new EditTransactionDF().show(getSupportFragmentManager(), EditTransactionDF.FRAGMENT_TAG);
+            case 0://клик по строке. откроем запись на редактирование
+                EditTransactionDF editTransactionDF = new EditTransactionDF();
+                Bundle args = new Bundle();
+                args.putParcelable(Constants.OBJECT_ID_EXTRA, item);
+                editTransactionDF.setArguments(args);
+                editTransactionDF.show(getSupportFragmentManager(), EditTransactionDF.FRAGMENT_TAG);
                 break;
             case 1://запрос на удаление
                 if(rvHelper != null) {
                     ConfirmDeleteDF dialog = new ConfirmDeleteDF();
-                    Bundle args = new Bundle();
-                    args.putParcelable(Constants.OBJECT_ID_EXTRA, item);
-                    dialog.setArguments(args);
+                    Bundle args2 = new Bundle();
+                    args2.putParcelable(Constants.OBJECT_ID_EXTRA, item);
+                    dialog.setArguments(args2);
                     dialog.show(getSupportFragmentManager(), ConfirmDeleteDF.FRAGMENT_TAG);
                 }
                 break;
@@ -126,15 +138,17 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
 
     @Override
     public void deleteConfirmed(Transaction item) {
-        dataSource.getTransactionsSource().remove(item);
+        transactionsSource.remove(item);
         rvHelper.removeItemFromList(item);
         Util.notifyBroadcastListeners(this);
         Toast.makeText(this, R.string.transactionDeletedMSG, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onEditTransactionDialogResult(List<String> newItemParams) {
-        //TODO: сделать
-        Toast.makeText(getApplicationContext(), newItemParams.get(0) + newItemParams.get(1), Toast.LENGTH_SHORT).show();
+    public void onEditTransactionDialogResult(Transaction transaction) {
+        transactionsSource.update(transaction);
+        ArrayList<Transaction> itemsList = transactionsSource
+                .getTransactionsListForAPhotoSession(photoSession);
+        rvHelper.setList(itemsList);
     }
 }

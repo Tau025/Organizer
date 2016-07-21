@@ -6,14 +6,17 @@ import java.util.Comparator;
  * ответ <0 говорит о том, что сравнение не прошло проверку и нужна перестановка
  */
 public class TransactionComparators {
-    public static Comparator<Transaction> FIRST_OLD = (first, second) -> {
-        long firstLong = first.getDate().getTimeInMillis();
-        long secondLong = second.getDate().getTimeInMillis();
-        int result;
-        if (firstLong < secondLong) result = -1;
-        else if (firstLong == secondLong) result = 0;
-        else result = 1;
-        return result;
+    public static Comparator<Transaction> FIRST_OLD = new Comparator<Transaction>() {
+        @Override
+        public int compare(Transaction first, Transaction second) {
+            long firstLong = first.getDate().getTimeInMillis();
+            long secondLong = second.getDate().getTimeInMillis();
+            int result;
+            if (firstLong < secondLong) result = -1;
+            else if (firstLong == secondLong) result = 0;
+            else result = 1;
+            return result;
+        }
     };
 
 

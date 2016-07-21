@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -55,7 +56,12 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
         ActionBar actionBar = getSupportActionBar();
 
         if(btnNewTask != null && actionBar != null) {
-            btnNewTask.setOnClickListener(v -> startTaskDetailsActivity(null, selectedDate));
+            btnNewTask.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startTaskDetailsActivity(null, selectedDate);
+                }
+            });
 
             Locale locale = getResources().getConfiguration().locale;
             String actionBarTitle = String.format(locale, getResources().getString(R.string.photoSessionsListTitleFormatter),
@@ -104,7 +110,7 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
 
 
     @Override
-    public void onBindViewHolder(MyItemRVAdapter.ViewHolder holder, int rvHelperId) {
+    public void onBindViewHolder(MyItemRVAdapter.ViewHolder holder, final int rvHelperId) {
         //здесь выбираем, какие поля хранимого объекта отобразятся в каких частях CardView
         //TextView в разметке по умолчанию такие: tvMain, tvAdditional1, tvAdditional2
         final PhotoSession item = (PhotoSession) holder.getItem();
@@ -121,8 +127,18 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
         ImageButton btnDelete = ((ImageButton) holder.getView().findViewById(R.id.btnDelete));
 
         //здесь устанавливаем слушатели
-        holder.getView().setOnClickListener(view -> onListItemClick(item, 0, rvHelperId));
-        btnDelete.setOnClickListener(view -> onListItemClick(item, 1, rvHelperId));
+        holder.getView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onListItemClick(item, 0, rvHelperId);
+            }
+        });
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onListItemClick(item, 1, rvHelperId);
+            }
+        });
     }
 
     private void onListItemClick(PhotoSession item, int clickedActionId, int rvHelperId) {

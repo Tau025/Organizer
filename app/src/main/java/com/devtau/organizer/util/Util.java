@@ -26,14 +26,17 @@ public abstract class Util {
                 date.get(Calendar.HOUR_OF_DAY), date.get(Calendar.MINUTE));
     }
 
-    public static void hideSoftKeyboard(Activity activity) {
-        new Handler().postDelayed(() -> {
-            View focused = activity.getCurrentFocus();
-            if (focused != null) {
-                focused.clearFocus();
-                InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(focused.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    public static void hideSoftKeyboard(final Activity activity) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View focused = activity.getCurrentFocus();
+                if (focused != null) {
+                    focused.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(focused.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 //                imm.hideSoftInputFromWindow(focused.getWindowToken(), 0);
+                }
             }
         }, 200);
     }

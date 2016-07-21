@@ -318,7 +318,7 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         }
     }
 
-    private void populateClientDetails(Client client) {
+    private void populateClientDetails(final Client client) {
         if(client != null && etClientName != null && etClientPhone != null && etClientAddress != null
                 && etClientSocial != null && etClientEmail != null) {
             etClientName.setText(client.getName());

@@ -40,7 +40,7 @@ public class SingleChoiceListDF extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        ArrayList<Client> list = getArguments().getParcelableArrayList(ARG_ITEMS_LIST);
+        final ArrayList<Client> list = getArguments().getParcelableArrayList(ARG_ITEMS_LIST);
         String[] clientNamesList = new String[list.size()];
         for (int i = 0; i < clientNamesList.length; i++) {
             clientNamesList[i] = list.get(i).getName();
@@ -48,8 +48,11 @@ public class SingleChoiceListDF extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.choose_client)
-                .setItems(clientNamesList, (dialog, which) -> {
-                    listener.processListItem(list.get(which));
+                .setItems(clientNamesList, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        listener.processListItem(list.get(which));
+                    }
                 });
         return builder.create();
     }

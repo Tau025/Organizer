@@ -2,6 +2,7 @@ package com.devtau.organizer.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -36,10 +37,18 @@ public class ConfirmDeleteDF<T extends Parcelable> extends DialogFragment {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.deleteConfirm)
-                .setPositiveButton(android.R.string.ok, (dialog, id) -> {
-                    listener.deleteConfirmed(item);
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        listener.deleteConfirmed(item);
+                    }
                 })
-                .setNegativeButton(android.R.string.cancel, (dialog, id) -> {/*NOP*/});
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        /*NOP*/
+                    }
+                });
         return builder.create();
     }
 
