@@ -1,5 +1,6 @@
 package com.devtau.organizer.activities;
 
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -45,7 +46,18 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
 
         transactionsSource = new DataSource(this).getTransactionsSource();
 
+        initFAB();
         initRecycler(photoSession);
+    }
+
+    private void initFAB() {
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openEditTransactionDF(new Transaction(photoSession.getPhotoSessionID()));
+            }
+        });
     }
 
     private void initRecycler(PhotoSession currentPhotoSession) {
@@ -55,25 +67,24 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
                 .getTransactionsListForAPhotoSession(currentPhotoSession);
 
         //соберем из подготовленных вводных данных хелпер
-        rvHelper = RVHelper.Builder.<Transaction> start(this, R.id.accountingDetailsRVPlaceholder)
+        rvHelper = RVHelper.Builder.<Transaction> start(this, R.id.rv_helper_placeholder)
                 .setList(itemsList)
-                .withAddButton()
                 .build();
-        rvHelper.addItemFragmentToLayout(this, R.id.accountingDetailsRVPlaceholder);
+        rvHelper.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);
     }
 
     @Override
     public void onBindViewHolder(MyItemRVAdapter.ViewHolder holder, final int rvHelperId) {
         //здесь выбираем, какие поля хранимого объекта отобразятся в каких частях CardView
         //TextView в разметке по умолчанию такие: tvMain, tvAdditional1, tvAdditional2
-        final Transaction item = (Transaction) holder.getItem();
+        final Transaction transaction = (Transaction) holder.getItem();
 
         Locale locale = getResources().getConfiguration().locale;
         String mainText = String.format(locale, getResources().getString(R.string.receivedFormatter),
-                Util.getStringDateFromCal(item.getDate(), this),item.getAmount());
+                Util.getStringDateFromCal(transaction.getDate(), this),transaction.getAmount());
         ((TextView) holder.getView().findViewById(R.id.tvMain)).setText(mainText);
 
-        ((TextView) holder.getView().findViewById(R.id.tvAdditional1)).setText(item.getComment());
+        ((TextView) holder.getView().findViewById(R.id.tvAdditional1)).setText(transaction.getComment());
 
         ImageButton btnDelete = ((ImageButton) holder.getView().findViewById(R.id.btnDelete));
 
@@ -81,36 +92,41 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
         holder.getView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onListItemClick(item, 0, rvHelperId);
+                onListItemClick(transaction, 0, rvHelperId);
             }
         });
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onListItemClick(item, 1, rvHelperId);
+                onListItemClick(transaction, 1, rvHelperId);
             }
         });
     }
 
-    private void onListItemClick(Transaction item, int clickedActionId, int rvHelperId) {
+    private void onListItemClick(Transaction transaction, int clickedActionId, int rvHelperId) {
         switch (clickedActionId) {
             case 0://клик по строке. откроем запись на редактирование
-                EditTransactionDF editTransactionDF = new EditTransactionDF();
-                Bundle args = new Bundle();
-                args.putParcelable(Constants.OBJECT_ID_EXTRA, item);
-                editTransactionDF.setArguments(args);
-                editTransactionDF.show(getSupportFragmentManager(), EditTransactionDF.FRAGMENT_TAG);
+                openEditTransactionDF(transaction);
                 break;
             case 1://запрос на удаление
                 if(rvHelper != null) {
                     ConfirmDeleteDF dialog = new ConfirmDeleteDF();
                     Bundle args2 = new Bundle();
-                    args2.putParcelable(Constants.OBJECT_ID_EXTRA, item);
+                    args2.putParcelable(Constants.OBJECT_ID_EXTRA, transaction);
                     dialog.setArguments(args2);
                     dialog.show(getSupportFragmentManager(), ConfirmDeleteDF.FRAGMENT_TAG);
                 }
                 break;
         }
+    }
+
+    //этот диалог используется и для создания новой транзакции и для редоктирования уже существующей
+    private void openEditTransactionDF(Transaction transaction) {
+        EditTransactionDF editTransactionDF = new EditTransactionDF();
+        Bundle args = new Bundle();
+        args.putParcelable(Constants.OBJECT_ID_EXTRA, transaction);
+        editTransactionDF.setArguments(args);
+        editTransactionDF.show(getSupportFragmentManager(), EditTransactionDF.FRAGMENT_TAG);
     }
 
     @Override
@@ -120,10 +136,7 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onAddNewItemDialogResult(List<String> newItemParams, int rvHelperId) {
-        //TODO: сделать
-        Toast.makeText(getApplicationContext(), newItemParams.get(0) + newItemParams.get(1), Toast.LENGTH_SHORT).show();
-    }
+    public void onAddNewItemDialogResult(List<String> newItemParams, int rvHelperId) { /*не используется*/ }
 
     @Override
     public Comparator provideComparator(int indexOfSortMethod) {
@@ -146,7 +159,11 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
 
     @Override
     public void onEditTransactionDialogResult(Transaction transaction) {
-        transactionsSource.update(transaction);
+        if(transaction.getTransactionID() != -1) {
+            transactionsSource.update(transaction);
+        } else {
+            transactionsSource.create(transaction);
+        }
         ArrayList<Transaction> itemsList = transactionsSource
                 .getTransactionsListForAPhotoSession(photoSession);
         rvHelper.setList(itemsList);

@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,24 +52,25 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
     }
 
     private void initControls(final Calendar selectedDate) {
-        Button btnNewTask = (Button) findViewById(R.id.btnNewTask);
         ActionBar actionBar = getSupportActionBar();
-
-        if(btnNewTask != null && actionBar != null) {
-            btnNewTask.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startTaskDetailsActivity(null, selectedDate);
-                }
-            });
-
+        if(actionBar != null) {
             Locale locale = getResources().getConfiguration().locale;
             String actionBarTitle = String.format(locale, getResources().getString(R.string.photoSessionsListTitleFormatter),
                     selectedDate.get(Calendar.DAY_OF_MONTH), selectedDate.get(Calendar.MONTH) + 1,
                     selectedDate.get(Calendar.YEAR) % 1000);
-
             actionBar.setTitle(actionBarTitle);
         }
+        initFAB();
+    }
+
+    private void initFAB() {
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startTaskDetailsActivity(new PhotoSession(selectedDate));
+            }
+        });
     }
 
     private void initRecycler(final Calendar selectedDate, Bundle savedInstanceState) {
@@ -91,11 +92,7 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
         registerReceiver(receiver, new IntentFilter(Constants.BROADCAST_REFRESH_TAG));
     }
 
-    private void startTaskDetailsActivity(PhotoSession selectedPhotoSession, Calendar selectedDate) {
-        if(selectedPhotoSession == null) {
-            selectedPhotoSession = new PhotoSession(selectedDate);
-        }
-
+    private void startTaskDetailsActivity(PhotoSession selectedPhotoSession) {
         Intent intent = new Intent(PhotoSessionsListActivity.this, PhotoSessionDetailsActivity.class);
         intent.putExtra(PhotoSessionDetailsActivity.PHOTO_SESSION_EXTRA, selectedPhotoSession);
         startActivity(intent);
@@ -141,17 +138,17 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
         });
     }
 
-    private void onListItemClick(PhotoSession item, int clickedActionId, int rvHelperId) {
+    private void onListItemClick(PhotoSession photoSession, int clickedActionId, int rvHelperId) {
         switch (clickedActionId) {
             case 0://клик по строке. перейдем к подробностям по выбранной задаче
                 //перейдем к подробностям по выбранной задаче
-                startTaskDetailsActivity(item, selectedDate);
+                startTaskDetailsActivity(photoSession);
                 break;
             case 1://запрос на удаление
                 if(rvHelper != null) {
                     ConfirmDeleteDF dialog = new ConfirmDeleteDF();
                     Bundle args = new Bundle();
-                    args.putParcelable(Constants.OBJECT_ID_EXTRA, item);
+                    args.putParcelable(Constants.OBJECT_ID_EXTRA, photoSession);
                     dialog.setArguments(args);
                     dialog.show(getSupportFragmentManager(), ConfirmDeleteDF.FRAGMENT_TAG);
                 }

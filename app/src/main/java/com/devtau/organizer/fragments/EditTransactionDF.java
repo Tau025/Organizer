@@ -33,7 +33,6 @@ public class EditTransactionDF extends DialogFragment implements
     @Override
     public void onAttach(Context context) {
         //если фрагмент является вложенным, context - это активность, держащая фрагмент-родитель, а не сам родитель
-        Logger.d(LOG_TAG, "onAttach()");
         super.onAttach(context);
         try {
             //проверим, реализован ли нужный интерфейс родительским фрагментом или активностью
@@ -50,46 +49,16 @@ public class EditTransactionDF extends DialogFragment implements
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Logger.d(LOG_TAG, "onCreateDialog()");
-
+//        Logger.d(LOG_TAG, "onCreateDialog()");
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
-
-//        View rootView = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_transaction, null);
-//        etAmount = (EditText) rootView.findViewById(R.id.etAmount);
-//        etComment = (EditText) rootView.findViewById(R.id.etComment);
-//
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder
-//                .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        if(etAmount != null && etComment != null) {
-//                            //подготовим компоненты
-//                            List<String> newItemParams = new ArrayList<>();
-//                            newItemParams.add(etAmount.getText().toString());
-//                            newItemParams.add(etComment.getText().toString());
-//
-//                            //передадим собранный массив строк на обработку слушателю
-//                            listener.onEditTransactionDialogResult(transaction, newItemParams);
-//                        }
-//                    }
-//                })
-//                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        /*NOP*/
-//                    }
-//                });
-//        return builder.create();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Logger.d(LOG_TAG, "onCreateView()");
+//        Logger.d(LOG_TAG, "onCreateView()");
         View rootView = inflater.inflate(R.layout.dialog_edit_transaction, container, false);
-
         insertStartDateTimeButtonsFrag(transaction.getDate());
         initControls(rootView);
         return rootView;
@@ -124,7 +93,9 @@ public class EditTransactionDF extends DialogFragment implements
         Button btnCancel = (Button) rootView.findViewById(R.id.btnCancel);
 
         if(etAmount != null && etComment != null && btnSave != null && btnCancel != null) {
-            etAmount.setText(String.valueOf(transaction.getAmount()));
+            if(transaction.getAmount() != 0) {
+                etAmount.setText(String.valueOf(transaction.getAmount()));
+            }
             etComment.setText(transaction.getComment());
             btnSave.setOnClickListener(this);
             btnCancel.setOnClickListener(this);
@@ -151,7 +122,7 @@ public class EditTransactionDF extends DialogFragment implements
     @Override
     public void onDateOrTimeSet(Calendar newDate, int fragmentID) {
         transaction.setDate(newDate);
-        Logger.d(LOG_TAG, "transactionDate: " + Util.dateFormat.format(transaction.getDate().getTime()));
+//        Logger.d(LOG_TAG, "transactionDate: " + Util.dateFormat.format(transaction.getDate().getTime()));
     }
 
     public interface onEditTransactionDFListener {
