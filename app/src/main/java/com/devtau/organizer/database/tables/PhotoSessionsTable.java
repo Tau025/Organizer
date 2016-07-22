@@ -12,6 +12,7 @@ public abstract class PhotoSessionsTable {
     public static final String START_DATE = "startDate";
     public static final String DEADLINE = "deadline";
     public static final String CLIENT_ID = "clientID";
+    public static final String CLIENT_LOOKUP_KEY = "clientLookupKey";
     public static final String PHOTO_SESSION_TYPE_ID = "photoSessionTypeID";
     public static final String PHOTO_SESSION_ADDRESS = "photoSessionAddress";
     public static final String PRESENT_TO_CLIENT_DESCRIPTION = "presentToClientDescription";
@@ -27,6 +28,7 @@ public abstract class PhotoSessionsTable {
             + START_DATE + " TEXT, "
             + DEADLINE + " TEXT, "
             + CLIENT_ID + " INTEGER, "
+            + CLIENT_LOOKUP_KEY + " TEXT, "
             + PHOTO_SESSION_TYPE_ID + " INTEGER, "
             + PHOTO_SESSION_ADDRESS + " TEXT, "
             + PRESENT_TO_CLIENT_DESCRIPTION + " TEXT, "
@@ -45,6 +47,7 @@ public abstract class PhotoSessionsTable {
         cv.put(START_DATE, Util.dateFormat.format(photoSession.getPhotoSessionDate().getTime()));
         cv.put(DEADLINE, Util.dateFormat.format(photoSession.getDeadline().getTime()));
         cv.put(CLIENT_ID, photoSession.getClientID());
+        cv.put(CLIENT_LOOKUP_KEY, photoSession.getClientLookupKey());
         cv.put(PHOTO_SESSION_TYPE_ID, photoSession.getPhotoSessionTypeID());
         cv.put(PHOTO_SESSION_ADDRESS, photoSession.getPhotoSessionAddress());
         cv.put(PRESENT_TO_CLIENT_DESCRIPTION, photoSession.getPresentToClientDescription());

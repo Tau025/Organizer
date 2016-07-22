@@ -115,8 +115,8 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
         final PhotoSession photoSession = (PhotoSession) holder.getItem();
 
         String clientName = "client not defined";
-        if(photoSession.getClientID() != -1) {
-            clientName = ContactParser.getName(String.valueOf(photoSession.getClientID()), getContentResolver());
+        if(photoSession.getClientID() != 0 && !"".equals(photoSession.getClientLookupKey())) {
+            clientName = ContactParser.getName(photoSession.getClientID(), photoSession.getClientLookupKey(), getContentResolver());
         }
         ((TextView) holder.getView().findViewById(R.id.tvMain)).setText(clientName);
         Locale locale = getResources().getConfiguration().locale;

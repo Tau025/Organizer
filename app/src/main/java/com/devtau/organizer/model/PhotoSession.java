@@ -17,7 +17,9 @@ public class PhotoSession implements Parcelable{
     private Calendar photoSessionDate;
     private Calendar deadline;
 
-    private long clientID;
+    //по двум полям ниже проверяется, привязан ли клиент к фотосессии
+    private long clientID = 0;
+    private String clientLookupKey = "";
     private int photoSessionTypeID;
     private String photoSessionAddress;
     private String presentToClientDescription;
@@ -40,6 +42,7 @@ public class PhotoSession implements Parcelable{
         deadline.setTime(new Date(parcel.readLong()));
 
         clientID = parcel.readLong();
+        clientLookupKey = parcel.readString();
         photoSessionTypeID = parcel.readInt();
         photoSessionAddress = parcel.readString();
         presentToClientDescription = parcel.readString();
@@ -78,6 +81,7 @@ public class PhotoSession implements Parcelable{
         }
 
         clientID = cursor.getLong(cursor.getColumnIndex(CLIENT_ID));
+        clientLookupKey = cursor.getString(cursor.getColumnIndex(CLIENT_LOOKUP_KEY));
         photoSessionTypeID = cursor.getInt(cursor.getColumnIndex(PHOTO_SESSION_TYPE_ID));
         photoSessionAddress = cursor.getString(cursor.getColumnIndex(PHOTO_SESSION_ADDRESS));
         presentToClientDescription = cursor.getString(cursor.getColumnIndex(PRESENT_TO_CLIENT_DESCRIPTION));
@@ -118,6 +122,10 @@ public class PhotoSession implements Parcelable{
 
     public void setClientID(long clientID) {
         this.clientID = clientID;
+    }
+
+    public void setClientLookupKey(String clientLookupKey) {
+        this.clientLookupKey = clientLookupKey;
     }
 
     public void setPhotoSessionTypeID(int photoSessionTypeID) {
@@ -173,6 +181,10 @@ public class PhotoSession implements Parcelable{
 
     public long getClientID() {
         return clientID;
+    }
+
+    public String getClientLookupKey() {
+        return clientLookupKey;
     }
 
     public int getPhotoSessionTypeID() {
@@ -236,6 +248,7 @@ public class PhotoSession implements Parcelable{
         parcel.writeLong(photoSessionDate.getTimeInMillis());
         parcel.writeLong(deadline.getTimeInMillis());
         parcel.writeLong(clientID);
+        parcel.writeString(clientLookupKey);
         parcel.writeInt(photoSessionTypeID);
         parcel.writeString(photoSessionAddress);
         parcel.writeString(presentToClientDescription);

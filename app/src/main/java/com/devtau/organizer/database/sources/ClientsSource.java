@@ -52,7 +52,7 @@ public class ClientsSource {
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             ContentValues cv = getContentValues(client);
             result = db.update(TABLE_NAME, cv, BaseColumns._ID + " = ?",
-                    new String[]{String.valueOf(client.getClientID())});
+                    new String[]{String.valueOf(client.getId())});
         } catch (SQLiteException e) {
             Toast.makeText(context, ERROR_TOAST, Toast.LENGTH_SHORT).show();
         }
@@ -64,7 +64,7 @@ public class ClientsSource {
         try {
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             result = db.delete(TABLE_NAME, BaseColumns._ID + " = ?",
-                    new String[]{String.valueOf(client.getClientID())});
+                    new String[]{String.valueOf(client.getId())});
         } catch (SQLiteException e) {
             Toast.makeText(context, ERROR_TOAST, Toast.LENGTH_SHORT).show();
         }

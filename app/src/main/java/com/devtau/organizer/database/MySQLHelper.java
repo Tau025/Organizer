@@ -14,7 +14,7 @@ public class MySQLHelper extends SQLiteOpenHelper {
     //helper is one no matter how much tables there are
     private static final String LOG_TAG = MySQLHelper.class.getSimpleName();
     private static final String DB_NAME = "OrganizerDB";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
     private static MySQLHelper instance;
     public static final String CREATE_TABLE = "CREATE TABLE %s ( %s);";
     public static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
@@ -55,7 +55,8 @@ public class MySQLHelper extends SQLiteOpenHelper {
                 db.execSQL(getCreateSql(TransactionsTable.TABLE_NAME, TransactionsTable.FIELDS));
             }
             if (oldVersion < 2) {
-//                db.execSQL("ALTER TABLE " + BillingsTable.TABLE_NAME + " ADD COLUMN " + BillingsTable.FAVORITE + " NUMERIC;");
+                db.execSQL("ALTER TABLE " + PhotoSessionsTable.TABLE_NAME + " ADD COLUMN "
+                        + PhotoSessionsTable.CLIENT_LOOKUP_KEY+ " TEXT;");
             }
             db.setTransactionSuccessful();
         } finally {

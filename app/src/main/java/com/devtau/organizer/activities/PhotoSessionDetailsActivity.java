@@ -68,10 +68,11 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
             photoSession = new PhotoSession(Calendar.getInstance());
         }
 
-        if(photoSession.getClientID() == 0) {
+        //клиента можно только выбрать. если нужно создать нового, то это делается в записной книжке
+        if(photoSession.getClientID() == 0 || "".equals(photoSession.getClientLookupKey())) {
             client = new Client();
         } else {
-            client = ContactParser.getContactInfoById(String.valueOf(photoSession.getClientID()), this);
+            client = ContactParser.getContactInfoById(photoSession.getClientID(), photoSession.getClientLookupKey(), this);
         }
 
         Util.hideSoftKeyboard(this);
@@ -482,7 +483,8 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         super.onActivityResult(reqCode, resultCode, data);
         if (reqCode == Constants.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             client = ContactParser.getContactInfo(data, this);
-            photoSession.setClientID(client.getClientID());
+            photoSession.setClientID(client.getId());
+            photoSession.setClientLookupKey(client.getLookupKey());
             populateClientDetails(client);
         }
     }

@@ -10,10 +10,11 @@ import java.util.Calendar;
 import static com.devtau.organizer.database.tables.ClientsTable.*;
 /**
  * Все данные, связанные с заказчиком
- * Нового заказчика мы добавляем в базу в момент сохранения заказа и только если у него есть имя
+ * Таблицы по клиентам нет. Храним только clientID и clientLookupKey в таблице PhotoSessionsTable
  */
 public class Client implements Parcelable {
-    private long clientID = -1;
+    private long id = -1;
+    private String lookupKey = "";
     private String name = "";
     private String phone = "";
     private String address = "";
@@ -22,7 +23,8 @@ public class Client implements Parcelable {
     private Calendar dateFirstMet = Calendar.getInstance();
 
     public Client(Parcel parcel) {
-        clientID = parcel.readLong();
+        id = parcel.readLong();
+        lookupKey = parcel.readString();
         name = parcel.readString();
         phone = parcel.readString();
         address = parcel.readString();
@@ -33,7 +35,8 @@ public class Client implements Parcelable {
     }
 
     public Client(Cursor cursor) {
-        clientID = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+        id = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+        lookupKey = cursor.getString(cursor.getColumnIndex(LOOKUP_KEY));
         name = cursor.getString(cursor.getColumnIndex(NAME));
         phone = cursor.getString(cursor.getColumnIndex(PHONE));
         address = cursor.getString(cursor.getColumnIndex(ADDRESS));
@@ -50,11 +53,15 @@ public class Client implements Parcelable {
     }
 
     public Client() {
-        clientID = -1;
+        id = -1;
+        lookupKey = "";
         dateFirstMet = Calendar.getInstance();
     }
 
-    public Client(String name, String phone, String address, String social, String email, Calendar dateFirstMet) {
+    public Client(long id, String lookupKey, String name, String phone, String address,
+                  String social, String email, Calendar dateFirstMet) {
+        this.id = id;
+        this.lookupKey = lookupKey;
         this.name = name;
         this.phone = phone;
         this.address = address;
@@ -76,11 +83,14 @@ public class Client implements Parcelable {
     };
 
 
-    public long getClientID() {
-        return clientID;
+    public long getId() {
+        return id;
     }
     public String getName() {
         return name;
+    }
+    public String getLookupKey() {
+        return lookupKey;
     }
     public String getPhone() {
         return phone;
@@ -99,11 +109,14 @@ public class Client implements Parcelable {
     }
 
 
-    public void setClientID(long clientID) {
-        this.clientID = clientID;
+    public void setId(long id) {
+        this.id = id;
     }
     public void setName(String name) {
         this.name = name;
+    }
+    public void setLookupKey(String lookupKey) {
+        this.lookupKey = lookupKey;
     }
     public void setPhone(String phone) {
         this.phone = phone;
@@ -131,15 +144,15 @@ public class Client implements Parcelable {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass() || clientID == -1) return false;
+        if (obj == null || getClass() != obj.getClass() || id == -1 || "".equals(lookupKey)) return false;
         Client that = (Client) obj;
-        if (that.clientID == -1) return false;
-        return clientID == that.clientID;
+        if (that.id == -1 || "".equals(that.lookupKey)) return false;
+        return id == that.id && lookupKey.equals(that.lookupKey);
     }
 
     @Override
     public int hashCode() {
-        return (int) (clientID != -1 ? 31 * clientID : 0);
+        return (int) (id != -1 ? 31 * id : 0);
     }
 
 
@@ -148,7 +161,8 @@ public class Client implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeLong(clientID);
+        parcel.writeLong(id);
+        parcel.writeString(lookupKey);
         parcel.writeString(name);
         parcel.writeString(phone);
         parcel.writeString(address);
