@@ -77,7 +77,7 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
 
     private void initRecycler(final Calendar selectedDate, Bundle savedInstanceState) {
         //запросим из бд список, который нам нужно показать
-        ArrayList<PhotoSession> itemsList = dataSource.getPhotoSessionsSource().getTasksListForADay(selectedDate);
+        ArrayList<PhotoSession> itemsList = dataSource.getPhotoSessionsSource().getPhotoSessionsListForADay(selectedDate);
 
         //соберем из подготовленных вводных данных хелпер
         rvHelper = RVHelper.Builder.<PhotoSession> start(this, R.id.rv_helper_placeholder).setList(itemsList)
@@ -87,7 +87,7 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                ArrayList<PhotoSession> tasksList = dataSource.getPhotoSessionsSource().getTasksListForADay(selectedDate);
+                ArrayList<PhotoSession> tasksList = dataSource.getPhotoSessionsSource().getPhotoSessionsListForADay(selectedDate);
                 rvHelper.setList(tasksList);
             }
         };

@@ -11,8 +11,12 @@ import com.devtau.organizer.database.MySQLHelper;
 import com.devtau.organizer.model.PhotoSession;
 import com.devtau.organizer.util.Logger;
 import com.devtau.organizer.util.Util;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+
 import static com.devtau.organizer.database.tables.PhotoSessionsTable.*;
 /**
  * represents top level of abstraction from dataBase
@@ -53,6 +57,7 @@ public class PhotoSessionsSource {
             ContentValues cv = getContentValues(photoSession);
             result = db.update(TABLE_NAME, cv, BaseColumns._ID + " = ?", new String[]{String.valueOf(photoSession.getPhotoSessionID())});
         } catch (SQLiteException e) {
+            Logger.e(LOG_TAG, ERROR_TOAST, e);
             Toast.makeText(context, ERROR_TOAST, Toast.LENGTH_SHORT).show();
         }
         return result != -1;
@@ -64,60 +69,58 @@ public class PhotoSessionsSource {
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             result = db.delete(TABLE_NAME, BaseColumns._ID + " = ?", new String[]{String.valueOf(photoSession.getPhotoSessionID())});
         } catch (SQLiteException e) {
+            Logger.e(LOG_TAG, ERROR_TOAST, e);
             Toast.makeText(context, ERROR_TOAST, Toast.LENGTH_SHORT).show();
         }
         return result != -1;
     }
 
-    public PhotoSession getTaskByID(long taskID) {
-        PhotoSession photoSession = null;
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+    public PhotoSession getPhotoSessionByID(long taskID) {
         String selectQuery = "SELECT * FROM " + TABLE_NAME
                 + " WHERE " + BaseColumns._ID + "='" + String.valueOf(taskID) + "'";
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
+        Cursor cursor = queryDb(selectQuery);
+        
+        PhotoSession photoSession = null;
+        if (cursor != null && cursor.moveToFirst()) {
             photoSession = new PhotoSession(cursor);
+            cursor.close();
         }
-        cursor.close();
+        
+        Logger.d(LOG_TAG, "getPhotoSessionByID() photoSession: " + photoSession);
         return photoSession;
     }
 
-    public int getTasksCount() {
+    public int getPhotoSessionsCount() {
         int count = 0;
         String selectQuery = "SELECT COUNT (*) FROM " + TABLE_NAME;
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
+        Cursor cursor = queryDb(selectQuery);
+        if (cursor != null && cursor.moveToFirst()) {
             count = cursor.getInt(0);
+            cursor.close();
         }
-        cursor.close();
-//        Logger.d("PhotoSessionsSource.getTasksCount() count: " + String.valueOf(count));
+        Logger.d(LOG_TAG, "getPhotoSessionsCount() count: " + String.valueOf(count));
         return count;
     }
 
     public ArrayList<PhotoSession> getItemsList() {
-        ArrayList<PhotoSession> list = new ArrayList<>();
         String sortMethod = "ASC";
-        String selectQuery;
-        selectQuery = "SELECT * FROM " + TABLE_NAME
+        String selectQuery = "SELECT * FROM " + TABLE_NAME
                 + " ORDER BY " + START_DATE + " " + sortMethod;
-
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
+        Cursor cursor = queryDb(selectQuery);
 
         // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
+        ArrayList<PhotoSession> list = new ArrayList<>();
+        if (cursor != null && cursor.moveToFirst()) {
             do {
                 list.add(new PhotoSession(cursor));
             } while (cursor.moveToNext());
+            cursor.close();
         }
-        cursor.close();
-//        Logger.d("PhotoSessionsSource.getTasksList() list.size(): " + String.valueOf(list.size()));
+        Logger.d(LOG_TAG, "getItemsList() list.size: " + String.valueOf(list.size()));
         return list;
     }
 
-    public Cursor getTasksCursorForADay(Calendar selectedDate) {
-        Cursor cursor = null;
+    public Cursor getPhotoSessionsCursorForADay(Calendar selectedDate) {
         Calendar endOfDay = Calendar.getInstance();
         endOfDay.setTime(selectedDate.getTime());
         endOfDay.add(Calendar.DATE, 1);
@@ -125,28 +128,10 @@ public class PhotoSessionsSource {
         String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE "
                 + START_DATE + ">='" + Util.dateFormat.format(selectedDate.getTime()) + "' AND "
                 + START_DATE + "<'" + Util.dateFormat.format(endOfDay.getTime()) + "'";
-
-        try {
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            cursor = db.rawQuery(selectQuery, null);
-        } catch (SQLiteException e) {
-            Toast.makeText(context, ERROR_TOAST, Toast.LENGTH_SHORT).show();
-        }
-
-        // looping through all rows and adding to list
-        ArrayList<PhotoSession> tasksList = new ArrayList<>();
-        if (cursor.moveToFirst()) {
-            do {
-                tasksList.add(new PhotoSession(cursor));
-            } while (cursor.moveToNext());
-        }
-        
-//        Logger.d("tasksList: " + String.valueOf(tasksList));
-        return cursor;
+        return queryDb(selectQuery);
     }
 
-    public ArrayList<PhotoSession> getTasksListForADay(Calendar selectedDate) {
-        Cursor cursor = null;
+    public ArrayList<PhotoSession> getPhotoSessionsListForADay(Calendar selectedDate) {
         Calendar endOfDay = Calendar.getInstance();
         endOfDay.setTime(selectedDate.getTime());
         endOfDay.add(Calendar.DATE, 1);
@@ -156,28 +141,45 @@ public class PhotoSessionsSource {
                 + START_DATE + ">='" + Util.dateFormat.format(selectedDate.getTime()) + "' AND "
                 + START_DATE + "<'" + Util.dateFormat.format(endOfDay.getTime()) + "'"
                 + " ORDER BY " + START_DATE + " " + sortMethod;
-
-        try {
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            cursor = db.rawQuery(selectQuery, null);
-        } catch (SQLiteException e) {
-            Toast.makeText(context, ERROR_TOAST, Toast.LENGTH_SHORT).show();
-        }
+        Cursor cursor = queryDb(selectQuery);
 
         // looping through all rows and adding to list
         ArrayList<PhotoSession> tasksList = new ArrayList<>();
-        if (cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             do {
                 tasksList.add(new PhotoSession(cursor));
             } while (cursor.moveToNext());
+            cursor.close();
         }
 
-//        Logger.d("tasksList: " + String.valueOf(tasksList));
+        Logger.d(LOG_TAG, "getPhotoSessionsListForADay() tasksList: " + String.valueOf(tasksList));
         return tasksList;
     }
 
-    public ArrayList<PhotoSession> getTasksListToBeNotifiedNow(Calendar startOfMinute) {
-        Cursor cursor = null;
+    public Date getFirstPhotoSessionDate() {
+        String sortMethod = "ASC";
+        String selectQuery = "SELECT * FROM " + TABLE_NAME
+                + " ORDER BY " + START_DATE + " " + sortMethod
+                + " LIMIT 1";
+        Cursor cursor = queryDb(selectQuery);
+
+        Date firstPhotoSessionDate = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            String firstPhotoSessionDateString = cursor.getString(cursor.getColumnIndex(START_DATE));
+            try {
+                firstPhotoSessionDate = Util.dateFormat.parse(firstPhotoSessionDateString);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            cursor.close();
+        }
+
+        Logger.d(LOG_TAG, "getFirstPhotoSessionDate() firstPhotoSessionDate: "
+				+ (firstPhotoSessionDate == null ? "null" : Util.dateFormat.format(firstPhotoSessionDate.getTime())));
+        return firstPhotoSessionDate;
+    }
+
+    public ArrayList<PhotoSession> getPhotoSessionsListToBeNotifiedNow(Calendar startOfMinute) {
         Calendar endOfMinute = Calendar.getInstance();
         endOfMinute.setTime(startOfMinute.getTime());
         endOfMinute.add(Calendar.MINUTE, 1);
@@ -185,24 +187,31 @@ public class PhotoSessionsSource {
         String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE "
                 + DEADLINE + ">='" + Util.dateFormat.format(startOfMinute.getTime()) + "' AND "
                 + DEADLINE + "<'" + Util.dateFormat.format(endOfMinute.getTime()) + "'";
-        Logger.d(LOG_TAG, "selectQuery: " + String.valueOf(selectQuery));
+        Cursor cursor = queryDb(selectQuery);
 
+        // looping through all rows and adding to list
+        ArrayList<PhotoSession> tasksList = new ArrayList<>();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                tasksList.add(new PhotoSession(cursor));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        Logger.d(LOG_TAG, "getPhotoSessionsListToBeNotifiedNow() tasksList: " + String.valueOf(tasksList));
+        return tasksList;
+    }
+
+    private Cursor queryDb(String selectQuery) {
+        Logger.d(LOG_TAG, "selectQuery: " + String.valueOf(selectQuery));
+        Cursor cursor = null;
         try {
             SQLiteDatabase db = dbHelper.getReadableDatabase();
             cursor = db.rawQuery(selectQuery, null);
         } catch (SQLiteException e) {
+            Logger.e(LOG_TAG, ERROR_TOAST, e);
             Toast.makeText(context, ERROR_TOAST, Toast.LENGTH_SHORT).show();
         }
-
-        // looping through all rows and adding to list
-        ArrayList<PhotoSession> tasksList = new ArrayList<>();
-        if (cursor.moveToFirst()) {
-            do {
-                tasksList.add(new PhotoSession(cursor));
-            } while (cursor.moveToNext());
-        }
-
-        Logger.d(LOG_TAG, "tasksList: " + String.valueOf(tasksList));
-        return tasksList;
+        return cursor;
     }
 }

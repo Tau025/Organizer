@@ -36,7 +36,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
                 //сделаем запрос к бд, есть ли задачи с уведомлением в эту минуту
                 DataSource dataSource = new DataSource(context);
-                ArrayList<PhotoSession> tasksToBeNotifiedNow = dataSource.getPhotoSessionsSource().getTasksListToBeNotifiedNow(now);
+                ArrayList<PhotoSession> tasksToBeNotifiedNow = dataSource.getPhotoSessionsSource().getPhotoSessionsListToBeNotifiedNow(now);
 
                 //TODO: тестовые строки
 //                PhotoSession mockPhotoSession1 = new PhotoSession(new GregorianCalendar(2016, 6, 5, 9, 20));

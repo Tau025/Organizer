@@ -24,7 +24,7 @@ public class DataSource {
         remindersSource = new RemindersSource(context);
         transactionsSource = new TransactionsSource(context);
 
-        if (photoSessionsSource.getTasksCount() == 0) {
+        if (photoSessionsSource.getPhotoSessionsCount() == 0) {
             photoSessionsSource.dropAllTablesInDB();
             populateDB();
         }
@@ -41,17 +41,17 @@ public class DataSource {
     }
 
     private void populateDB() {
-        addMockPhotoSession(createDate(5, 8, 2016, 8, 40), 1);
-        addMockPhotoSession(createDate(7, 8, 2016, 10, 0), 2);
-        addMockPhotoSession(createDate(8, 8, 2016, 12, 30), 3);
-        addMockPhotoSession(createDate(9, 8, 2016, 9, 20), 1);
-        addMockPhotoSession(createDate(10, 8, 2016, 10, 20), 2);
+        addMockPhotoSession(createDate(5, 4, 2017, 8, 40), 1);
+        addMockPhotoSession(createDate(7, 4, 2017, 10, 0), 2);
+        addMockPhotoSession(createDate(8, 4, 2017, 12, 30), 3);
+        addMockPhotoSession(createDate(9, 4, 2017, 9, 20), 1);
+        addMockPhotoSession(createDate(10, 4, 2017, 10, 20), 2);
 
-        addMockPhotoSession(createDate(5, 8, 2016, 20, 40), 3);
-        addMockPhotoSession(createDate(7, 8, 2016, 15, 0), 1);
-        addMockPhotoSession(createDate(8, 8, 2016, 17, 30), 2);
-        addMockPhotoSession(createDate(9, 8, 2016, 19, 20), 3);
-        addMockPhotoSession(createDate(10, 8, 2016, 17, 20), 3);
+        addMockPhotoSession(createDate(5, 4, 2017, 20, 40), 3);
+        addMockPhotoSession(createDate(7, 4, 2017, 15, 0), 1);
+        addMockPhotoSession(createDate(8, 4, 2017, 17, 30), 2);
+        addMockPhotoSession(createDate(9, 4, 2017, 19, 20), 3);
+        addMockPhotoSession(createDate(10, 4, 2017, 17, 20), 3);
     }
 
     private Calendar createDate(int day, int month, int year, int hour, int minute) {

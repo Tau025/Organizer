@@ -259,4 +259,22 @@ public class PhotoSession implements Parcelable{
         parcel.writeDouble(hoursSpentPlan);
         parcel.writeDouble(hoursSpentFact);
     }
+
+    @Override
+    public String toString() {
+        return "photoSessionID=" + photoSessionID
+                + "\nphotoSessionDate=" + Util.dateFormat.format(photoSessionDate.getTime())
+                + "\ndeadline=" + Util.dateFormat.format(deadline.getTime())
+                + "\nclientID=" + clientID
+                + "\nclientLookupKey=" + clientLookupKey
+                + "\nphotoSessionTypeID=" + photoSessionTypeID
+                + "\nphotoSessionAddress=" + photoSessionAddress
+                + "\npresentToClientDescription=" + presentToClientDescription
+                + "\npresentToClientCost=" + presentToClientCost
+                + "\ntotalCost=" + totalCost
+                + "\nbalance=" + balance
+                + "\npricePerHour=" + pricePerHour
+                + "\nhoursSpentPlan=" + hoursSpentPlan
+                + "\nhoursSpentFact=" + hoursSpentFact;
+    }
 }

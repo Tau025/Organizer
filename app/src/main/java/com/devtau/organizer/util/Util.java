@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.os.Handler;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import com.devtau.organizer.database.DataSource;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public abstract class Util {
@@ -21,7 +23,7 @@ public abstract class Util {
     }
 
     public static String getStringDateTimeFromCal(Calendar date){
-        return String.format("%02d.%02d %02d:%02d",
+        return String.format(Locale.getDefault(), "%02d.%02d %02d:%02d",
                 date.get(Calendar.DAY_OF_MONTH), date.get(Calendar.MONTH) + 1,
                 date.get(Calendar.HOUR_OF_DAY), date.get(Calendar.MINUTE));
     }
@@ -83,5 +85,17 @@ public abstract class Util {
         cal.setTimeInMillis(date.getTimeInMillis());
         Locale locale = context.getResources().getConfiguration().locale;
         return String.format(locale, "%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+    }
+
+    public static Date getCalendarStart(Context context) {
+		Date startDate = new DataSource(context).getPhotoSessionsSource().getFirstPhotoSessionDate();
+        Date now = new Date();
+		if (startDate == null || startDate.after(now)) {
+			Calendar yearStart = Calendar.getInstance();
+			yearStart.set(Calendar.DAY_OF_MONTH, 1);
+			yearStart.set(Calendar.MONTH, 0);
+            startDate = yearStart.getTime();
+		}
+        return startDate;
     }
 }
