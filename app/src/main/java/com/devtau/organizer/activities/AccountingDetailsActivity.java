@@ -30,7 +30,7 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
         ConfirmDeleteDF.ConfirmDeleteDFListener<Transaction>,
         EditTransactionDF.onEditTransactionDFListener {
     private PhotoSession photoSession;
-    private RVHelper rvHelper;
+    private RVHelper<Transaction> rvHelper;
     private TransactionsSource transactionsSource;
 
     @Override
@@ -69,19 +69,19 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
         //соберем из подготовленных вводных данных хелпер
         rvHelper = RVHelper.Builder.<Transaction> start(this, R.id.rv_helper_placeholder)
                 .setList(itemsList)
+                .withDividers(true)
                 .build();
         rvHelper.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);
     }
 
     @Override
     public void onBindViewHolder(MyItemRVAdapter.ViewHolder holder, final int rvHelperId) {
-        //здесь выбираем, какие поля хранимого объекта отобразятся в каких частях CardView
+        //здесь выбираем, какие поля хранимого объекта отобразятся в каких частях строки
         //TextView в разметке по умолчанию такие: tvMain, tvAdditional1, tvAdditional2
         final Transaction transaction = (Transaction) holder.getItem();
 
-        Locale locale = getResources().getConfiguration().locale;
-        String mainText = String.format(locale, getResources().getString(R.string.receivedFormatter),
-                Util.getStringDateFromCal(transaction.getDate(), this),transaction.getAmount());
+        String mainText = String.format(Locale.getDefault(), getResources().getString(R.string.receivedFormatter),
+                Util.getStringDateFromCal(transaction.getDate()),transaction.getAmount());
         ((TextView) holder.getView().findViewById(R.id.tvMain)).setText(mainText);
 
         ((TextView) holder.getView().findViewById(R.id.tvAdditional1)).setText(transaction.getComment());
@@ -120,7 +120,7 @@ public class AccountingDetailsActivity extends AppCompatActivity implements
         }
     }
 
-    //этот диалог используется и для создания новой транзакции и для редоктирования уже существующей
+    //этот диалог используется и для создания новой транзакции и для редактирования уже существующей
     private void openEditTransactionDF(Transaction transaction) {
         EditTransactionDF editTransactionDF = new EditTransactionDF();
         Bundle args = new Bundle();

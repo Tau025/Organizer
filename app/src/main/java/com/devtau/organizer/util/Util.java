@@ -43,9 +43,8 @@ public abstract class Util {
         }, 200);
     }
 
-    public static void logDate(String dateName, Calendar dateToLog, Context context){
-        Locale locale = context.getResources().getConfiguration().locale;
-        String log = String.format(locale, "%02d.%02d.%04d %02d:%02d:%02d", dateToLog.get(Calendar.DAY_OF_MONTH),
+    public static void logDate(String dateName, Calendar dateToLog){
+        String log = String.format(Locale.getDefault(), "%02d.%02d.%04d %02d:%02d:%02d", dateToLog.get(Calendar.DAY_OF_MONTH),
                 dateToLog.get(Calendar.MONTH) + 1, dateToLog.get(Calendar.YEAR), dateToLog.get(Calendar.HOUR_OF_DAY),
                 dateToLog.get(Calendar.MINUTE), dateToLog.get(Calendar.SECOND));
         if (dateName.length() >= 20) {
@@ -73,18 +72,16 @@ public abstract class Util {
         return from + (int) (Math.random() * ++to);
     }
 
-    public static String getStringDateFromCal(Calendar date, Context context){
+    public static String getStringDateFromCal(Calendar date){
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(date.getTimeInMillis());
-        Locale locale = context.getResources().getConfiguration().locale;
-        return String.format(locale, "%02d.%02d.%02d", cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR) % 100);
+        return String.format(Locale.getDefault(), "%02d.%02d.%02d", cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR) % 100);
     }
 
-    public static String getStringTimeFromCal(Calendar date, Context context){
+    public static String getStringTimeFromCal(Calendar date){
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(date.getTimeInMillis());
-        Locale locale = context.getResources().getConfiguration().locale;
-        return String.format(locale, "%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+        return String.format(Locale.getDefault(), "%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
     }
 
     public static Date getCalendarStart(Context context) {

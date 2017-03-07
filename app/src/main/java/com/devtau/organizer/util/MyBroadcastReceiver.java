@@ -25,12 +25,10 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         //на выполнение всего метода у нас есть 10 секунд, иначе появится диалоговое окно о принудительном закрытии ANR
-        String msg = "-";
         switch (intent.getAction()){
             case Intent.ACTION_TIME_TICK:
                 Calendar now = Calendar.getInstance();
-                Locale locale = context.getResources().getConfiguration().locale;
-                msg = String.format(locale, context.getString(R.string.currentTime),
+                String msg = String.format(Locale.getDefault(), context.getString(R.string.currentTime),
                         now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND));
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
 

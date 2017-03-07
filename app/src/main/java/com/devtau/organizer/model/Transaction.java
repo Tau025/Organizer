@@ -24,7 +24,7 @@ public class Transaction implements Parcelable {
     private int amount;
     private String comment;
 
-    public Transaction(Parcel parcel) {
+    private Transaction(Parcel parcel) {
         transactionID = parcel.readLong();
         taskID = parcel.readLong();
         date = Calendar.getInstance();
@@ -113,8 +113,7 @@ public class Transaction implements Parcelable {
 
 
     public String toString(Context context) {
-        Locale locale = context.getResources().getConfiguration().locale;
-        return String.format(locale, context.getResources().getString(R.string.transactionToStringFormatter),
+        return String.format(Locale.getDefault(), context.getResources().getString(R.string.transactionToStringFormatter),
                 Util.dateFormat.format(date.getTime()), amount, comment);
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +20,7 @@ import java.util.Comparator;
  */
 public class RVFragment<T extends Parcelable> extends Fragment {
     private OnRVFragmentListener listener;
-    private MyItemRVAdapter adapter;
+    private MyItemRVAdapter<T> adapter;
     private RecyclerView recyclerView;
 
     //Обязательный пустой конструктор
@@ -54,12 +55,14 @@ public class RVFragment<T extends Parcelable> extends Fragment {
         int columnCount = Constants.DEFAULT_COLUMN_COUNT;
         int listItemLayoutId = Constants.DEFAULT_LIST_ITEM_LAYOUT;
         int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
+        boolean includeDividers = Constants.DEFAULT_INCLUDE_DIVIDERS;
 
         if (getArguments() != null) {
             itemsList = getArguments().getParcelableArrayList(ItemFragment.ARG_ITEMS_LIST);
             columnCount = getArguments().getInt(ItemFragment.ARG_COLUMN_COUNT);
             listItemLayoutId = getArguments().getInt(ItemFragment.ARG_LIST_ITEM_LAYOUT_ID);
             indexOfSortMethod = getArguments().getInt(ItemFragment.ARG_INDEX_OF_SORT_METHOD);
+            includeDividers = getArguments().getBoolean(ItemFragment.ARG_INCLUDE_DIVIDERS);
         }
         Comparator comparator = listener.provideComparator(indexOfSortMethod);
 
@@ -69,10 +72,13 @@ public class RVFragment<T extends Parcelable> extends Fragment {
             recyclerView = (RecyclerView) view;
             if (columnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                if (includeDividers) {
+                    recyclerView.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
+                }
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, columnCount));
             }
-            adapter = new MyItemRVAdapter(itemsList, listItemLayoutId, comparator, listener);
+            adapter = new MyItemRVAdapter<>(itemsList, listItemLayoutId, comparator, listener);
             recyclerView.setAdapter(adapter);
         }
         return view;
@@ -111,7 +117,7 @@ public class RVFragment<T extends Parcelable> extends Fragment {
 
 
     //интерфейс для общения RVFragment со своим родителем
-    public interface OnRVFragmentListener {
+    interface OnRVFragmentListener {
         void onBindViewHolder(MyItemRVAdapter.ViewHolder holder);
         Comparator provideComparator(int indexOfSortMethod);
     }

@@ -6,8 +6,6 @@ import android.os.Parcelable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import com.devtau.recyclerviewlib.util.Constants;
 import com.devtau.recyclerviewlib.util.Logger;
 import com.devtau.recyclerviewlib.util.Util;
@@ -35,10 +33,10 @@ import com.devtau.recyclerviewlib.util.Util;
  * Также библиотека поддерживает работу сразу с несколькими списками.
  */
 public class RVHelper<T extends Parcelable> {
-    private ItemFragment itemFragment;
+    private ItemFragment<T> itemFragment;
 
-    public RVHelper(Builder<T> builder) {
-        itemFragment = new ItemFragment();
+    private RVHelper(Builder<T> builder) {
+        itemFragment = new ItemFragment<>();
         Bundle args = new Bundle();
 
         Logger.d("builder.rvHelperId: " + String.valueOf(builder.rvHelperId));
@@ -47,6 +45,7 @@ public class RVHelper<T extends Parcelable> {
         args.putInt(ItemFragment.ARG_COLUMN_COUNT, builder.columnCount);
         args.putInt(ItemFragment.ARG_LIST_ITEM_LAYOUT_ID, builder.listItemLayoutId);
         args.putBoolean(ItemFragment.ARG_INCLUDE_ADD_BUTTON_IN_LAYOUT, builder.includeAddButtonInLayout);
+        args.putBoolean(ItemFragment.ARG_INCLUDE_DIVIDERS, builder.includeDividers);
         args.putBoolean(ItemFragment.ARG_INCLUDE_SPINNER_IN_LAYOUT, builder.includeSpinnerInLayout);
         if(builder.includeSpinnerInLayout) {
             args.putStringArrayList(ItemFragment.ARG_COMPARATORS_NAMES, builder.comparatorsNames);
@@ -105,6 +104,7 @@ public class RVHelper<T extends Parcelable> {
         private int columnCount = Constants.DEFAULT_COLUMN_COUNT;
         private int listItemLayoutId = Constants.DEFAULT_LIST_ITEM_LAYOUT;
         private boolean includeAddButtonInLayout = Constants.DEFAULT_INCLUDE_ADD_BUTTON;
+        private boolean includeDividers = Constants.DEFAULT_INCLUDE_DIVIDERS;
         //4 параметра ниже нужны для использования сортировки
         private boolean includeSpinnerInLayout = Constants.DEFAULT_ADD_SPINNER;
         private ArrayList<String> comparatorsNames;//дефолт назначается в конструкторе
@@ -117,40 +117,45 @@ public class RVHelper<T extends Parcelable> {
         //при необходимости работать одновременно с несколькими списками используйте rvHelperId
         //для идентификации списка, от которого пришел колбэк
         public static <T extends Parcelable>Builder<T> start(Context context, int rvHelperId) {
-            Builder newBuilder = new Builder<>(context);
+            Builder<T> newBuilder = new Builder<>(context);
             newBuilder.rvHelperId = rvHelperId;
             return newBuilder;
         }
 
-        public Builder setList(ArrayList<T> itemsList) {
+        public Builder<T> setList(ArrayList<T> itemsList) {
             this.itemsList = itemsList;
             return this;
         }
 
-        public Builder withColumnCount(int columnCount) {
+        public Builder<T> withColumnCount(int columnCount) {
             this.columnCount = columnCount;
             return this;
         }
 
-        public Builder withListItemLayoutId(int listItemLayoutId) {
+        public Builder<T> withListItemLayoutId(int listItemLayoutId) {
             this.listItemLayoutId = listItemLayoutId;
             return this;
         }
 
-        public Builder withAddButton() {
+        public Builder<T> withAddButton() {
             includeAddButtonInLayout = true;
             return this;
         }
 
-        public Builder withSortSpinner(ArrayList<String> comparatorsNames, int indexOfSortMethod) {
+        public Builder<T> withSortSpinner(ArrayList<String> comparatorsNames, int indexOfSortMethod) {
             includeSpinnerInLayout = true;
             this.comparatorsNames = comparatorsNames;
             this.indexOfSortMethod = indexOfSortMethod;
             return this;
         }
 
+        public Builder<T> withDividers(boolean include) {
+            includeDividers = include;
+            return this;
+        }
+
         public RVHelper<T> build() {
-            return new RVHelper(this);
+            return new RVHelper<>(this);
         }
     }
 }

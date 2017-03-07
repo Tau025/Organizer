@@ -19,7 +19,6 @@ import com.devtau.organizer.model.PhotoSession;
 import com.devtau.organizer.model.PhotoSessionComparators;
 import com.devtau.organizer.util.Constants;
 import com.devtau.organizer.util.ContactParser;
-import com.devtau.organizer.util.Logger;
 import com.devtau.organizer.util.Util;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,7 +35,7 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
     private static final String LOG_TAG = PhotoSessionsListActivity.class.getSimpleName();
     private DataSource dataSource;
     private BroadcastReceiver receiver;
-    private RVHelper rvHelper;
+    private RVHelper<PhotoSession> rvHelper;
     private Calendar selectedDate;
 
     @Override
@@ -56,8 +55,7 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
     private void initControls(final Calendar selectedDate) {
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
-            Locale locale = getResources().getConfiguration().locale;
-            String actionBarTitle = String.format(locale, getResources().getString(R.string.photoSessionsListTitleFormatter),
+            String actionBarTitle = String.format(Locale.getDefault(), getResources().getString(R.string.photoSessionsListTitleFormatter),
                     selectedDate.get(Calendar.DAY_OF_MONTH), selectedDate.get(Calendar.MONTH) + 1,
                     selectedDate.get(Calendar.YEAR) % 1000);
             actionBar.setTitle(actionBarTitle);
@@ -80,7 +78,9 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
         ArrayList<PhotoSession> itemsList = dataSource.getPhotoSessionsSource().getPhotoSessionsListForADay(selectedDate);
 
         //соберем из подготовленных вводных данных хелпер
-        rvHelper = RVHelper.Builder.<PhotoSession> start(this, R.id.rv_helper_placeholder).setList(itemsList)
+        rvHelper = RVHelper.Builder.<PhotoSession> start(this, R.id.rv_helper_placeholder)
+                .setList(itemsList)
+                .withDividers(true)
                 .build();
         rvHelper.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);
 
@@ -119,8 +119,7 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
             clientName = ContactParser.getName(photoSession.getClientID(), photoSession.getClientLookupKey(), getContentResolver());
         }
         ((TextView) holder.getView().findViewById(R.id.tvMain)).setText(clientName);
-        Locale locale = getResources().getConfiguration().locale;
-        String additionalText = String.format(locale, getResources().getString(R.string.date_time_and_price_formatter),
+        String additionalText = String.format(Locale.getDefault(), getResources().getString(R.string.date_time_and_price_formatter),
                 Util.getStringDateTimeFromCal(photoSession.getPhotoSessionDate()), photoSession.getTotalCost());
         ((TextView) holder.getView().findViewById(R.id.tvAdditional1)).setText(additionalText);
         ImageButton btnDelete = ((ImageButton) holder.getView().findViewById(R.id.btnDelete));

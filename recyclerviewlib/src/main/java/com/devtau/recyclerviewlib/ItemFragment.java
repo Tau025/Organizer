@@ -26,6 +26,7 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
     public static final String ARG_COLUMN_COUNT = "columnCount";
     public static final String ARG_LIST_ITEM_LAYOUT_ID = "listItemLayoutId";
     public static final String ARG_INCLUDE_ADD_BUTTON_IN_LAYOUT = "includeAddButtonInLayout";
+    public static final String ARG_INCLUDE_DIVIDERS = "includeDividers";
     public static final String ARG_INCLUDE_SPINNER_IN_LAYOUT = "includeSpinnerInLayout";
     public static final String ARG_COMPARATORS_NAMES = "comparatorsNames";
     public static final String ARG_INDEX_OF_SORT_METHOD = "indexOfSortMethod";
@@ -36,7 +37,7 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
     private int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
 
     private SpinnerFragment spinnerFragment;
-    private RVFragment rvFragment;
+    private RVFragment<T> rvFragment;
 
     //Обязательный пустой конструктор
     public ItemFragment() { }
@@ -69,6 +70,7 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
         int columnCount = Constants.DEFAULT_COLUMN_COUNT;
         int listItemLayoutId = Constants.DEFAULT_LIST_ITEM_LAYOUT;
         boolean includeAddButtonInLayout = Constants.DEFAULT_INCLUDE_ADD_BUTTON;
+        boolean includeDividers = Constants.DEFAULT_INCLUDE_DIVIDERS;
         ArrayList<String> comparatorsNames = Util.getDefaultComparatorsNames(getContext());
 
         if (getArguments() != null) {
@@ -77,6 +79,7 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
             columnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             listItemLayoutId = getArguments().getInt(ARG_LIST_ITEM_LAYOUT_ID);
             includeAddButtonInLayout = getArguments().getBoolean(ARG_INCLUDE_ADD_BUTTON_IN_LAYOUT);
+            includeDividers = getArguments().getBoolean(ARG_INCLUDE_DIVIDERS);
             if(includeSpinnerInLayout = getArguments().getBoolean(ARG_INCLUDE_SPINNER_IN_LAYOUT)) {
                 comparatorsNames = getArguments().getStringArrayList(ARG_COMPARATORS_NAMES);
                 indexOfSortMethod = getArguments().getInt(ARG_INDEX_OF_SORT_METHOD);
@@ -91,7 +94,7 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
             addFragmentToLayout(R.id.add_button_fragment_placeholder, new AddButtonFragment());
         }
 
-        rvFragment = createRVFragment(itemsList, columnCount, listItemLayoutId, indexOfSortMethod);
+        rvFragment = createRVFragment(itemsList, columnCount, listItemLayoutId, indexOfSortMethod, includeDividers);
         addFragmentToLayout(R.id.recycler_view_placeholder, rvFragment);
 
         return view;
@@ -106,15 +109,16 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
         return fragment;
     }
 
-    public RVFragment createRVFragment(ArrayList<T> itemsList, int columnCount,
-                                       int listItemLayoutId, int indexOfSortMethod) {
-        RVFragment fragment = new RVFragment();
+    public RVFragment<T> createRVFragment(ArrayList<T> itemsList, int columnCount,
+                                       int listItemLayoutId, int indexOfSortMethod, boolean includeDividers) {
+        RVFragment<T> fragment = new RVFragment<>();
         Bundle args = new Bundle();
 
         args.putParcelableArrayList(ARG_ITEMS_LIST, itemsList);
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         args.putInt(ARG_LIST_ITEM_LAYOUT_ID, listItemLayoutId);
         args.putInt(ARG_INDEX_OF_SORT_METHOD, indexOfSortMethod);
+        args.putBoolean(ARG_INCLUDE_DIVIDERS, includeDividers);
 
         fragment.setArguments(args);
         return fragment;

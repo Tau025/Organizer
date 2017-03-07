@@ -8,4 +8,5 @@ public abstract class Constants {
     public static final int DEFAULT_LIST_ITEM_LAYOUT = R.layout.default_list_item;
     public static final boolean DEFAULT_ADD_SPINNER = false;
     public static final boolean DEFAULT_INCLUDE_ADD_BUTTON = false;
+    public static final boolean DEFAULT_INCLUDE_DIVIDERS = false;
 }
