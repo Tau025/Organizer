@@ -28,7 +28,6 @@ public abstract class PhotoSessionsTable {
             + START_DATE + " TEXT, "
             + DEADLINE + " TEXT, "
             + CLIENT_ID + " INTEGER, "
-            + CLIENT_LOOKUP_KEY + " TEXT, "
             + PHOTO_SESSION_TYPE_ID + " INTEGER, "
             + PHOTO_SESSION_ADDRESS + " TEXT, "
             + PRESENT_TO_CLIENT_DESCRIPTION + " TEXT, "

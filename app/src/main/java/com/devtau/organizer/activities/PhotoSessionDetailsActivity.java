@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,7 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.devtau.organizer.OrganizerApp;
 import com.devtau.organizer.R;
 import com.devtau.organizer.database.DataSource;
 import com.devtau.organizer.fragments.DateTimeButtonsFrag;
@@ -32,6 +34,8 @@ import com.devtau.organizer.model.PhotoSession;
 import com.devtau.organizer.util.Constants;
 import com.devtau.organizer.util.ContactParser;
 import com.devtau.organizer.util.Logger;
+import com.devtau.organizer.PermissionObserver;
+import com.devtau.organizer.util.PermissionCodes;
 import com.devtau.organizer.util.Util;
 import java.util.Calendar;
 
@@ -437,9 +441,12 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.btnChooseClient:
-                Intent select = new Intent(Intent.ACTION_PICK);
-                select.setData(ContactsContract.Contacts.CONTENT_URI);
-                startActivityForResult(select, Constants.REQUEST_CODE);
+                PermissionObserver observer = OrganizerApp.get().getPermissionObserver();
+                if (observer.isPermissionDynamic() && !observer.isReadContactPermissionGranted()) {
+                    requestPermissions(observer.createContactPermission(), PermissionCodes.ContactPermission.getCode());
+                } else {
+                    openContactChooser();
+                }
                 break;
 
             case R.id.btnAccountingDetails:
@@ -486,6 +493,14 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
             photoSession.setClientID(client.getId());
             photoSession.setClientLookupKey(client.getLookupKey());
             populateClientDetails(client);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        PermissionObserver observer = OrganizerApp.get().getPermissionObserver();
+        if (requestCode == PermissionCodes.ContactPermission.getCode() && observer.isReadContactPermissionGranted()) {
+            openContactChooser();
         }
     }
 
@@ -559,5 +574,11 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         }
         Logger.d(LOG_TAG, "startDate: " + Util.dateFormat.format(photoSession.getPhotoSessionDate().getTime()) +
                 ", endDate: " + Util.dateFormat.format(photoSession.getDeadline().getTime()));
+    }
+
+    private void openContactChooser() {
+        Intent select = new Intent(Intent.ACTION_PICK);
+        select.setData(ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(select, Constants.REQUEST_CODE);
     }
 }
