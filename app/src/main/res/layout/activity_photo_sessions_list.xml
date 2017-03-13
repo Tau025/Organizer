@@ -8,9 +8,35 @@
     tools:context="com.devtau.organizer.activities.PhotoSessionsListActivity">
 
     <FrameLayout
+        android:id="@+id/rv_helper_placeholder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/rv_helper_placeholder"/>
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/rv_helper_message"
+            tools:text="@string/getting_list_from_database"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"/>
+
+        <ImageView
+            android:id="@+id/error_sign"
+            android:src="@drawable/ic_warning_black_48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:visibility="invisible"/>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible"/>
+    </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

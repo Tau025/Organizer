@@ -10,6 +10,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.devtau.organizer.R;
@@ -19,6 +21,8 @@ import com.devtau.organizer.model.PhotoSession;
 import com.devtau.organizer.model.PhotoSessionComparators;
 import com.devtau.organizer.util.Constants;
 import com.devtau.organizer.util.ContactParser;
+import com.devtau.organizer.util.DBWorkState;
+import com.devtau.organizer.util.Logger;
 import com.devtau.organizer.util.Util;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,6 +32,7 @@ import java.util.Locale;
 import com.devtau.recyclerviewlib.MyItemRVAdapter;
 import com.devtau.recyclerviewlib.RVHelper;
 import com.devtau.recyclerviewlib.RVHelperInterface;
+import rx.Observable;
 
 public class PhotoSessionsListActivity extends AppCompatActivity implements
         RVHelperInterface,
@@ -36,7 +41,9 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
     private DataSource dataSource;
     private BroadcastReceiver receiver;
     private RVHelper<PhotoSession> rvHelper;
-    private Calendar selectedDate;
+    private TextView rvHelperMessage;
+    private ImageView errorSign;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,50 +52,80 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
 
         dataSource = new DataSource(this);
 
-        selectedDate = Calendar.getInstance();
+        Calendar selectedDate = Calendar.getInstance();
         selectedDate.setTimeInMillis(getIntent().getLongExtra(Constants.SELECTED_DATE_EXTRA, 0));
 
         initControls(selectedDate);
-        initRecycler(selectedDate, savedInstanceState);
+        if (savedInstanceState == null) {
+            initRecycler(selectedDate);
+            initBroadcastReceiver(selectedDate);
+        }
     }
 
-    private void initControls(final Calendar selectedDate) {
+    private void initControls(Calendar selectedDate) {
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null) {
+        if (actionBar != null) {
             String actionBarTitle = String.format(Locale.getDefault(), getResources().getString(R.string.photoSessionsListTitleFormatter),
                     selectedDate.get(Calendar.DAY_OF_MONTH), selectedDate.get(Calendar.MONTH) + 1,
                     selectedDate.get(Calendar.YEAR) % 1000);
             actionBar.setTitle(actionBarTitle);
         }
-        initFAB();
+
+        rvHelperMessage = (TextView) findViewById(R.id.rv_helper_message);
+        errorSign = (ImageView) findViewById(R.id.error_sign);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(view -> startTaskDetailsActivity(new PhotoSession(selectedDate)));
     }
 
-    private void initFAB() {
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startTaskDetailsActivity(new PhotoSession(selectedDate));
-            }
+    private void initRecycler(Calendar selectedDate) {
+        showDBWorkState(DBWorkState.GETTING_DATA);
+        Observable<List<PhotoSession>> photoSessionsListObservable = dataSource.getPhotoSessionsSource().getPhotoSessionsListForADayAsync(selectedDate);
+        photoSessionsListObservable.subscribe(itemsList -> {
+            showDBWorkState(itemsList.size() == 0 ? DBWorkState.WORK_COMPLETED_NO_DATA : DBWorkState.WORK_COMPLETED);
+            rvHelper = RVHelper.Builder.<PhotoSession>start(PhotoSessionsListActivity.this, R.id.rv_helper_placeholder)
+                    .setList((ArrayList<PhotoSession>) itemsList)
+                    .withDividers(true)
+                    .build();
+            progressBar.setVisibility(View.INVISIBLE);
+            rvHelper.addItemFragmentToLayout(PhotoSessionsListActivity.this, R.id.rv_helper_placeholder);
+        }, throwable -> {
+            showDBWorkState(DBWorkState.ERROR);
+            Logger.e(LOG_TAG, "Error while initializing list: " + throwable.getMessage());
         });
     }
 
-    private void initRecycler(final Calendar selectedDate, Bundle savedInstanceState) {
-        //запросим из бд список, который нам нужно показать
-        ArrayList<PhotoSession> itemsList = dataSource.getPhotoSessionsSource().getPhotoSessionsListForADay(selectedDate);
+    private void showDBWorkState(DBWorkState state) {
+        if (rvHelperMessage == null || progressBar == null) return;
+        switch (state) {
+            case GETTING_DATA:
+                rvHelperMessage.setText(R.string.getting_list_from_database);
+                progressBar.setVisibility(View.VISIBLE);
+                break;
 
-        //соберем из подготовленных вводных данных хелпер
-        rvHelper = RVHelper.Builder.<PhotoSession> start(this, R.id.rv_helper_placeholder)
-                .setList(itemsList)
-                .withDividers(true)
-                .build();
-        rvHelper.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);
+            case WORK_COMPLETED:
+                rvHelperMessage.setText("");
+                errorSign.setVisibility(View.INVISIBLE);
+                break;
 
+            case WORK_COMPLETED_NO_DATA:
+                rvHelperMessage.setText(R.string.nothing_planned);
+                errorSign.setVisibility(View.INVISIBLE);
+                break;
+
+            case ERROR:
+                rvHelperMessage.setText(R.string.error_while_initializing_list);
+                errorSign.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    private void initBroadcastReceiver(Calendar selectedDate) {
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                ArrayList<PhotoSession> tasksList = dataSource.getPhotoSessionsSource().getPhotoSessionsListForADay(selectedDate);
-                rvHelper.setList(tasksList);
+                initRecycler(selectedDate);
             }
         };
         registerReceiver(receiver, new IntentFilter(Constants.BROADCAST_REFRESH_TAG));
@@ -104,7 +141,9 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         //деактивируем приемник широковещательных сообщений
-        unregisterReceiver(receiver);
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+        }
     }
 
 
@@ -125,18 +164,8 @@ public class PhotoSessionsListActivity extends AppCompatActivity implements
         ImageButton btnDelete = ((ImageButton) holder.getView().findViewById(R.id.btnDelete));
 
         //здесь устанавливаем слушатели
-        holder.getView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onListItemClick(photoSession, 0, rvHelperId);
-            }
-        });
-        btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onListItemClick(photoSession, 1, rvHelperId);
-            }
-        });
+        holder.getView().setOnClickListener(view -> onListItemClick(photoSession, 0, rvHelperId));
+        btnDelete.setOnClickListener(view -> onListItemClick(photoSession, 1, rvHelperId));
     }
 
     private void onListItemClick(PhotoSession photoSession, int clickedActionId, int rvHelperId) {

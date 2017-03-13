@@ -46,6 +46,9 @@
 
     <string name="receivedFormatter" formatted="false">%s получено: %d</string>
     <string name="transactionToStringFormatter" formatted="false">дата: %s, сумма: %d, комментарий: %s</string>
+    <string name="error_while_initializing_list">Ошибка при получении списка</string>
+    <string name="getting_list_from_database">Запрашиваем список из базы данных</string>
+    <string name="nothing_planned">Ничего не запланировано</string>
 
 
     <string-array name="photo_session_type">

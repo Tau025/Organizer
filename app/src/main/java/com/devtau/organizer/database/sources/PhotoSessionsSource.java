@@ -6,17 +6,21 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 import com.devtau.organizer.database.MySQLHelper;
 import com.devtau.organizer.model.PhotoSession;
 import com.devtau.organizer.util.Logger;
 import com.devtau.organizer.util.Util;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
+import java.util.List;
+import java.util.concurrent.Callable;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import static com.devtau.organizer.database.tables.PhotoSessionsTable.*;
 /**
  * represents top level of abstraction from dataBase
@@ -131,11 +135,26 @@ public class PhotoSessionsSource {
         return queryDb(selectQuery);
     }
 
-    public ArrayList<PhotoSession> getPhotoSessionsListForADay(Calendar selectedDate) {
+    public Observable<List<PhotoSession>> getPhotoSessionsListForADayAsync2(Calendar selectedDate) {
+        return Observable.just(getPhotoSessionsListForADay(selectedDate))
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<List<PhotoSession>> getPhotoSessionsListForADayAsync(Calendar selectedDate) {
+        Callable<List<PhotoSession>> callableTasksList = () -> getPhotoSessionsListForADay(selectedDate);
+        return makeObservable(callableTasksList)
+                .subscribeOn(Schedulers.computation())
+				.observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private List<PhotoSession> getPhotoSessionsListForADay(Calendar selectedDate) {
         Calendar endOfDay = Calendar.getInstance();
         endOfDay.setTime(selectedDate.getTime());
         endOfDay.add(Calendar.DATE, 1);
         String sortMethod = "ASC";
+
+        emulateHeavyCallToDB();
 
         String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE "
                 + START_DATE + ">='" + Util.dateFormat.format(selectedDate.getTime()) + "' AND "
@@ -154,6 +173,14 @@ public class PhotoSessionsSource {
 
         Logger.d(LOG_TAG, "getPhotoSessionsListForADay() tasksList: " + String.valueOf(tasksList));
         return tasksList;
+    }
+
+    private void emulateHeavyCallToDB() {
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public Date getFirstPhotoSessionDate() {
@@ -200,6 +227,23 @@ public class PhotoSessionsSource {
 
         Logger.d(LOG_TAG, "getPhotoSessionsListToBeNotifiedNow() tasksList: " + String.valueOf(tasksList));
         return tasksList;
+    }
+
+
+    @NonNull
+    private <T> Observable<T> makeObservable(Callable<T> func) {
+        return Observable.create(
+                subscriber -> {
+					try {
+						T observed = func.call();
+						if (observed != null) {
+							subscriber.onNext(observed);
+						}
+						subscriber.onCompleted();
+					} catch (Exception ex) {
+						subscriber.onError(ex);
+					}
+                });
     }
 
     private Cursor queryDb(String selectQuery) {

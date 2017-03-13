@@ -57,8 +57,8 @@ public class RVHelper<T extends Parcelable> {
 
     public void addItemFragmentToLayout(AppCompatActivity activity, int placeholderId){
         FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-        ft.replace(placeholderId, itemFragment);
         ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+        ft.replace(placeholderId, itemFragment);
         ft.commit();
     }
 

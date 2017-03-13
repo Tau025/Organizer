@@ -16,8 +16,8 @@ public class MySQLHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "OrganizerDB";
     private static final int DB_VERSION = 2;
     private static MySQLHelper instance;
-    public static final String CREATE_TABLE = "CREATE TABLE %s ( %s);";
-    public static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
+    private static final String CREATE_TABLE = "CREATE TABLE %s ( %s);";
+    private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
     public static final String PRIMARY_KEY = BaseColumns._ID + " integer primary key autoincrement, ";
     private final Resources res;
 
@@ -37,12 +37,12 @@ public class MySQLHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         updateMyDatabase(db, 0, DB_VERSION);
-        Logger.d(LOG_TAG, "MySQLHelper: onCreate");
+        Logger.d(LOG_TAG, "onCreate()");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Logger.d(LOG_TAG, "Found new DB version. About to update to: " + String.valueOf(DB_VERSION));
+        Logger.d(LOG_TAG, "onUpgrade() Found new DB version. About to update to: " + String.valueOf(DB_VERSION));
         updateMyDatabase(db, oldVersion, newVersion);
     }
 
