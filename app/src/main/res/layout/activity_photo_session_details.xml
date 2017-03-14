@@ -3,46 +3,44 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     tools:context=".activities.PhotoSessionDetailsActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:gravity="center_vertical">
+
             <TextView
+                android:text="@string/client_contacts"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Контакты клиента"
-                android:id="@+id/tvContacts"
-                android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_height="wrap_content"/>
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                android:text="детали"
-                android:id="@+id/btnClientDetails"
-                android:layout_toLeftOf="@+id/btnChooseClient"
-                android:layout_toStartOf="@+id/btnChooseClient"
-                android:layout_centerVertical="true" />
+                android:text="@string/details"
+                android:id="@+id/btnClientDetails"/>
 
             <ImageButton
                 android:id="@+id/btnChooseClient"
-                android:layout_width="wrap_content"
+                android:src="@drawable/ic_person_black_24dp"
+                android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_person_black_24dp" />
-        </RelativeLayout>
+                android:contentDescription="@null"/>
+        </LinearLayout>
 
 
         <TableRow
@@ -51,24 +49,24 @@
             android:gravity="center_vertical">
 
             <TextView
+                android:text="@string/name"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="имя:" />
+                android:layout_height="wrap_content"/>
 
             <EditText
+                android:id="@+id/etClientName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/etClientName"
                 android:layout_weight="1"
-                android:inputType="textMultiLine" />
+                android:inputType="textMultiLine"/>
         </TableRow>
+
 
         <!--подробности по клиенту-->
         <TableLayout
+            android:id="@+id/expandableClientDetails"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:id="@+id/expandableClientDetails">
+            android:layout_height="0dp">
 
             <TableRow
                 android:layout_width="match_parent"
@@ -76,56 +74,18 @@
                 android:gravity="center_vertical">
 
                 <TextView
+                    android:text="@string/clientPhone"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/clientPhone" />
+                    android:layout_height="wrap_content"/>
 
                 <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
                     android:id="@+id/etClientPhone"
-                    android:inputType="phone|textMultiLine"
-                    android:layout_weight="1" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/clientAddress" />
-
-                <EditText
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:id="@+id/etClientAddress"
                     android:layout_weight="1"
-                    android:inputType="textPostalAddress|textMultiLine" />
+                    android:inputType="phone|textMultiLine"/>
             </TableRow>
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/clientSocial" />
-
-                <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:id="@+id/etClientSocial"
-                    android:layout_weight="1"
-                    android:inputType="text|textMultiLine" />
-            </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
@@ -133,26 +93,63 @@
                 android:gravity="center_vertical">
 
                 <TextView
+                    android:text="@string/clientAddress"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/clientEmail" />
+                    android:layout_height="wrap_content"/>
 
                 <EditText
+                    android:id="@+id/etClientAddress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress|textMultiLine"
-                    android:ems="10"
+                    android:layout_weight="1"
+                    android:inputType="textPostalAddress|textMultiLine"/>
+            </TableRow>
+
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:text="@string/clientSocial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <EditText
+                    android:id="@+id/etClientSocial"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="text|textMultiLine"/>
+            </TableRow>
+
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:text="@string/clientEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <EditText
                     android:id="@+id/etClientEmail"
-                    android:layout_weight="1" />
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="textEmailAddress|textMultiLine"/>
             </TableRow>
         </TableLayout>
 
 
         <LinearLayout
+            android:id="@+id/moveableLayout"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/moveableLayout">
+            android:layout_height="match_parent">
 
             <!--дата съемки/дедлайн-->
             <TableRow
@@ -163,15 +160,15 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal">
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
                     <TextView
+                        android:text="@string/photosession_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="дата съемки" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                     <FrameLayout
                         android:id="@+id/startDateTimePlaceHolder"
@@ -180,18 +177,19 @@
                         android:orientation="horizontal"/>
                 </LinearLayout>
 
+
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:gravity="center_horizontal">
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
                     <TextView
+                        android:text="@string/deadline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="дедлайн" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                     <FrameLayout
                         android:id="@+id/deadlineDateTimePlaceHolder"
@@ -201,43 +199,45 @@
                 </LinearLayout>
             </TableRow>
 
-            <TableRow
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical">
 
                 <TextView
+                    android:text="@string/photosession_type"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="категория съемки:" />
+                    android:layout_height="wrap_content"/>
 
                 <Spinner
+                    android:id="@+id/spnPhotoSessionType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/spnPhotoSessionType"
                     android:entries="@array/photo_session_type" />
-            </TableRow>
+            </LinearLayout>
 
-            <TableRow
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical" >
 
                 <TextView
+                    android:text="@string/photosession_address"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="адрес съемки:" />
+                    android:layout_height="wrap_content"/>
 
                 <EditText
+                    android:id="@+id/etPhotoSessionAddress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:id="@+id/etPhotoSessionAddress"
                     android:layout_weight="1"
                     android:inputType="textPostalAddress|textMultiLine" />
-            </TableRow>
+            </LinearLayout>
 
-            <TableRow
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical">
@@ -245,149 +245,145 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="подарок\nклиенту:" />
+                    android:text="@string/present_to_client" />
 
                 <EditText
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:ems="10"
                     android:id="@+id/etPresentToClientDescription"
                     android:layout_weight="2"
                     android:inputType="textPostalAddress|textMultiLine" />
 
                 <TextView
+                    android:text="@string/cost"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ст-сть:" />
+                    android:layout_height="wrap_content"/>
 
                 <EditText
+                    android:id="@+id/etPresentToClientCost"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:ems="10"
-                    android:id="@+id/etPresentToClientCost"
-                    android:layout_weight="1" />
-            </TableRow>
+                    android:layout_weight="1"
+                    android:inputType="number"/>
+            </LinearLayout>
 
-            <TableRow
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical">
 
                 <TextView
+                    android:text="@string/total_cost"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="общая\nстоимость:" />
+                    android:layout_height="wrap_content"/>
 
                 <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
                     android:id="@+id/etPhotoSessionTotalCost"
-                    android:layout_weight="1"
-                    android:inputType="number" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="остаток:"
-                    android:id="@+id/textView" />
-
-                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:id="@+id/tvPhotoSessionBalance"
                     android:layout_weight="1"
-                    android:inputType="number" />
+                    android:inputType="number"/>
+
+                <TextView
+                    android:text="@string/balance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/tvPhotoSessionBalance"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
 
                 <Button
+                    android:id="@+id/btnAccountingDetails"
+                    android:text="@string/details"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="детали"
-                    android:id="@+id/btnAccountingDetails" />
-            </TableRow>
+                    android:layout_height="48dp"/>
+            </LinearLayout>
 
-            <TableRow
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical" >
+                android:gravity="center_vertical">
 
                 <TextView
+                    android:text="@string/price_per_hour"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="договорная цена часа:" />
+                    android:layout_height="wrap_content"/>
 
                 <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
                     android:id="@+id/etPhotoSessionPricePerHour"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:inputType="number" />
-            </TableRow>
+                    android:inputType="number"/>
+            </LinearLayout>
 
-            <TableRow
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical" >
+                android:gravity="center_vertical">
 
                 <TextView
+                    android:text="@string/hours_spent"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="количество часов:" />
+                    android:layout_height="wrap_content"/>
 
                 <TextView
+                    android:text="@string/plan"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="п" />
+                    android:layout_height="wrap_content"/>
 
                 <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
                     android:id="@+id/etHoursSpentPlan"
-                    android:layout_weight="1"
-                    android:inputType="numberDecimal" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ф"/>
-
-                <EditText
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:id="@+id/etHoursSpentFact"
                     android:layout_weight="1"
-                    android:inputType="numberDecimal" />
-            </TableRow>
+                    android:inputType="numberDecimal"/>
 
-            <RelativeLayout
+                <TextView
+                    android:text="@string/fact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <EditText
+                    android:id="@+id/etHoursSpentFact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="numberDecimal"/>
+            </LinearLayout>
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical">
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/save"
-                    android:id="@+id/btnSave"
-                    android:layout_alignParentTop="true"
-                    android:layout_toLeftOf="@+id/btnCancel"
-                    android:layout_toStartOf="@+id/btnCancel" />
+                <android.support.v4.widget.Space
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
 
                 <Button
+                    android:id="@+id/btnSave"
+                    android:text="@string/save"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/cancel"
+                    style="@style/FlatBorderlessButton"/>
+
+                <Button
                     android:id="@+id/btnCancel"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true" />
-            </RelativeLayout>
+                    android:text="@string/cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/FlatBorderlessButton"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

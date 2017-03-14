@@ -39,10 +39,25 @@
     <string name="dateError1">Ошибка. Дата съемки не может быть позже даты дедлайна</string>
     <string name="dateError2">Ошибка. Дата дедлайна не может быть раньше даты съемки</string>
     <string name="date_time_and_price_formatter" formatted="false">дата %s, цена %d</string>
+    <string name="name">имя:</string>
     <string name="clientPhone">тел.:</string>
     <string name="clientAddress">адрес:</string>
     <string name="clientSocial">соц.сеть:</string>
     <string name="clientEmail">email:</string>
+    <string name="details">детали</string>
+    <string name="price_per_hour">договорная цена часа:</string>
+    <string name="photosession_type">категория съемки:</string>
+    <string name="deadline">дедлайн</string>
+    <string name="photosession_date">дата съемки</string>
+    <string name="client_contacts">Контакты клиента</string>
+    <string name="balance">остаток:</string>
+    <string name="total_cost">общая\nстоимость:</string>
+    <string name="cost">ст-сть:</string>
+    <string name="hours_spent">количество часов:</string>
+    <string name="plan">п</string>
+    <string name="fact">ф</string>
+    <string name="photosession_address">адрес съемки:</string>
+    <string name="present_to_client">подарок/nклиенту:</string>
 
     <string name="receivedFormatter" formatted="false">%s получено: %d</string>
     <string name="transactionToStringFormatter" formatted="false">дата: %s, сумма: %d, комментарий: %s</string>
