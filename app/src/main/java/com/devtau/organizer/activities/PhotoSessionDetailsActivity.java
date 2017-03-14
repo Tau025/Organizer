@@ -12,8 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,11 +36,13 @@ import com.devtau.organizer.util.Logger;
 import com.devtau.organizer.PermissionObserver;
 import com.devtau.organizer.util.PermissionCodes;
 import com.devtau.organizer.util.Util;
+import com.jakewharton.rxbinding.widget.RxTextView;
 import java.util.Calendar;
 
 public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         View.OnClickListener,
         DateTimeButtonsFrag.DateTimeButtonsInterface {
+
     public static final String PHOTO_SESSION_EXTRA = "PhotoSessionExtra";
     public static final String CLIENT_EXTRA = "ClientExtra";
     private static final String LOG_TAG = PhotoSessionDetailsActivity.class.getSimpleName();
@@ -62,18 +63,18 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
 
         dataSource = new DataSource(this);
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             photoSession = getIntent().getParcelableExtra(PHOTO_SESSION_EXTRA);
         } else {
             photoSession = savedInstanceState.getParcelable(PHOTO_SESSION_EXTRA);
             client = savedInstanceState.getParcelable(CLIENT_EXTRA);
         }
-        if(photoSession == null) {
+        if (photoSession == null) {
             photoSession = new PhotoSession(Calendar.getInstance());
         }
 
         //клиента можно только выбрать. если нужно создать нового, то это делается в записной книжке
-        if(photoSession.getClientID() == 0 || "".equals(photoSession.getClientLookupKey())) {
+        if (photoSession.getClientID() == 0 || "".equals(photoSession.getClientLookupKey())) {
             client = new Client();
         } else {
             client = ContactParser.getContactInfoById(photoSession.getClientID(), photoSession.getClientLookupKey(), this);
@@ -87,7 +88,7 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
     }
 
     private void initControls() {
-        if(photoSession == null) return;
+        if (photoSession == null) return;
 
         initButtons();
 
@@ -114,11 +115,10 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         populateClientDetails(client);
 
 
-        if(spnPhotoSessionType != null) {
+        if (spnPhotoSessionType != null) {
             spnPhotoSessionType.setSelection(photoSession.getPhotoSessionTypeID(), true);
             spnPhotoSessionType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                public void onItemSelected(AdapterView<?> parent, View itemSelected,
-                                           int selectedItemPosition, long selectedId) {
+                public void onItemSelected(AdapterView<?> parent, View itemSelected, int selectedItemPosition, long selectedId) {
                     photoSession.setPhotoSessionTypeID(selectedItemPosition);
                 }
                 public void onNothingSelected(AdapterView<?> parent) {/*NOP*/}
@@ -126,184 +126,91 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         }
 
 
-        if(etPhotoSessionAddress != null) {
-            if(!"".equals(photoSession.getPhotoSessionAddress())) {
-                etPhotoSessionAddress.setText(photoSession.getPhotoSessionAddress());
-            }
-            etPhotoSessionAddress.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    photoSession.setPhotoSessionAddress(charSequence.toString());
-                }
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
-            });
+        if (etPhotoSessionAddress != null) {
+            etPhotoSessionAddress.setText(photoSession.getPhotoSessionAddress());
+            RxTextView.textChanges(etPhotoSessionAddress).subscribe(charSequence -> photoSession.setPhotoSessionAddress(charSequence.toString()));
         }
 
 
-        if(etPresentToClientName != null) {
-            if(!"".equals(photoSession.getPresentToClientDescription())) {
-                etPresentToClientName.setText(photoSession.getPresentToClientDescription());
-            }
-            etPresentToClientName.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    photoSession.setPresentToClientDescription(charSequence.toString());
-                }
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
-            });
+        if (etPresentToClientName != null) {
+            etPresentToClientName.setText(photoSession.getPresentToClientDescription());
+            RxTextView.textChanges(etPresentToClientName).subscribe(charSequence -> photoSession.setPresentToClientDescription(charSequence.toString()));
         }
 
 
-        if(etPresentToClientCost != null) {
-            if(photoSession.getPresentToClientCost() != 0) {
+        if (etPresentToClientCost != null) {
+            if (photoSession.getPresentToClientCost() != 0) {
                 etPresentToClientCost.setText(String.valueOf(photoSession.getPresentToClientCost()));
             }
-            etPresentToClientCost.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    int newPresentToClientCost = 0;
-                    if(!"".equals(charSequence.toString())) {
-                        try {
-                            newPresentToClientCost = Integer.parseInt(charSequence.toString());
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), R.string.integerFormatException, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    photoSession.setPresentToClientCost(newPresentToClientCost);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
-            });
+            RxTextView.textChanges(etPresentToClientCost).subscribe(charSequence -> photoSession.setPresentToClientCost(parseInt(charSequence)));
         }
 
 
-        if(etPhotoSessionTotalCost != null) {
-            if(photoSession.getTotalCost() != 0) {
+        if (etPhotoSessionTotalCost != null) {
+            if (photoSession.getTotalCost() != 0) {
                 etPhotoSessionTotalCost.setText(String.valueOf(photoSession.getTotalCost()));
             }
-            etPhotoSessionTotalCost.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    //TODO: связать с tvBalance
-                    int newTotalCost = 0;
-                    if(!"".equals(charSequence.toString())) {
-                        try {
-                            newTotalCost = Integer.parseInt(charSequence.toString());
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), R.string.integerFormatException, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    photoSession.setTotalCost(newTotalCost);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
+            RxTextView.textChanges(etPhotoSessionTotalCost).subscribe(charSequence -> {
+                photoSession.setTotalCost(parseInt(charSequence));
+                photoSession.calculateBalance(dataSource.getTransactionsSource());
+                tvBalance.setText(String.valueOf(photoSession.getBalance()));
             });
         }
 
 
-        if(tvBalance != null && photoSession.getBalance() != 0) {
+        if (tvBalance != null && photoSession.getBalance() != 0) {
             tvBalance.setText(String.valueOf(photoSession.getBalance()));
         }
 
 
-        if(etPricePerHour != null) {
-            if(photoSession.getPricePerHour() != 0) {
+        if (etPricePerHour != null) {
+            if (photoSession.getPricePerHour() != 0) {
                 etPricePerHour.setText(String.valueOf(photoSession.getPricePerHour()));
             }
-            etPricePerHour.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    int newPricePerHour = 0;
-                    if(!"".equals(charSequence.toString())) {
-                        try {
-                            newPricePerHour = Integer.parseInt(charSequence.toString());
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), R.string.integerFormatException, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    photoSession.setPricePerHour(newPricePerHour);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
-            });
+            RxTextView.textChanges(etPricePerHour).subscribe(charSequence -> photoSession.setPricePerHour(parseInt(charSequence)));
         }
 
 
-        if(etHoursSpentPlan != null) {
-            if(photoSession.getHoursSpentPlan() != 0) {
+        if (etHoursSpentPlan != null) {
+            if (photoSession.getHoursSpentPlan() != 0) {
                 etHoursSpentPlan.setText(String.valueOf(photoSession.getHoursSpentPlan()));
             }
-            etHoursSpentPlan.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    double newHoursSpentPlan = 0;
-                    if(!"".equals(charSequence.toString())) {
-                        try {
-                            newHoursSpentPlan = Double.parseDouble(charSequence.toString());
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), R.string.doubleFormatException, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    photoSession.setHoursSpentPlan(newHoursSpentPlan);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
-            });
+            RxTextView.textChanges(etHoursSpentPlan).subscribe(charSequence -> photoSession.setHoursSpentPlan(parseDouble(charSequence)));
         }
 
 
-        if(etHoursSpentFact != null) {
-            if(photoSession.getHoursSpentFact() != 0) {
+        if (etHoursSpentFact != null) {
+            if (photoSession.getHoursSpentFact() != 0) {
                 etHoursSpentFact.setText(String.valueOf(photoSession.getHoursSpentFact()));
             }
-            etHoursSpentFact.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    double newHoursSpentFact = 0;
-                    if(!"".equals(charSequence.toString())) {
-                        try {
-                            newHoursSpentFact = Double.parseDouble(charSequence.toString());
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), R.string.doubleFormatException, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    photoSession.setHoursSpentFact(newHoursSpentFact);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
-            });
+            RxTextView.textChanges(etHoursSpentFact).subscribe(charSequence -> photoSession.setHoursSpentFact(parseDouble(charSequence)));
         }
+    }
+
+    private int parseInt(CharSequence charSequence) {
+        int result = 0;
+        if (!TextUtils.isEmpty(charSequence)) {
+            try {
+                result = Integer.parseInt(charSequence.toString());
+            } catch (NumberFormatException e) {
+                Logger.e(LOG_TAG, "error while parsing charSequence", e);
+                Toast.makeText(getApplicationContext(), R.string.integerFormatException, Toast.LENGTH_SHORT).show();
+            }
+        }
+        return result;
+    }
+
+    private double parseDouble(CharSequence charSequence) {
+        double result = 0;
+        if (!TextUtils.isEmpty(charSequence)) {
+            try {
+                result = Double.parseDouble(charSequence.toString());
+            } catch (NumberFormatException e) {
+                Logger.e(LOG_TAG, "error while parsing charSequence", e);
+                Toast.makeText(getApplicationContext(), R.string.doubleFormatException, Toast.LENGTH_SHORT).show();
+            }
+        }
+        return result;
     }
 
     private void initButtons() {
@@ -313,8 +220,7 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         Button btnSave = (Button) findViewById(R.id.btnSave);
         Button btnCancel = (Button) findViewById(R.id.btnCancel);
 
-        if(btnClientDetails != null && btnChooseClient != null && btnAccountingDetails != null
-               && btnSave != null && btnCancel != null) {
+        if (btnClientDetails != null && btnChooseClient != null && btnAccountingDetails != null && btnSave != null && btnCancel != null) {
             btnClientDetails.setOnClickListener(this);
             btnChooseClient.setOnClickListener(this);
             btnAccountingDetails.setOnClickListener(this);
@@ -324,69 +230,19 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
     }
 
     private void populateClientDetails(final Client client) {
-        if(client != null && etClientName != null && etClientPhone != null && etClientAddress != null
-                && etClientSocial != null && etClientEmail != null) {
-            etClientName.setText(client.getName());
-            etClientPhone.setText(client.getPhone());
-            etClientAddress.setText(client.getAddress());
-            etClientSocial.setText(client.getSocial());
-            etClientEmail.setText(client.getEmail());
+        if (client == null || etClientName == null || etClientPhone == null || etClientAddress == null || etClientSocial == null || etClientEmail == null) return;
 
-            etClientName.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    client.setName(charSequence.toString());
-                }
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
-            });
+        etClientName.setText(client.getName());
+        etClientPhone.setText(client.getPhone());
+        etClientAddress.setText(client.getAddress());
+        etClientSocial.setText(client.getSocial());
+        etClientEmail.setText(client.getEmail());
 
-            etClientPhone.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    client.setPhone(charSequence.toString());
-                }
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
-            });
-
-            etClientAddress.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    client.setAddress(charSequence.toString());
-                }
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
-            });
-
-            etClientSocial.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    client.setSocial(charSequence.toString());
-                }
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
-            });
-
-            etClientEmail.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {/*NOP*/}
-                @Override
-                public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                    client.setEmail(charSequence.toString());
-                }
-                @Override
-                public void afterTextChanged(Editable editable) {/*NOP*/}
-            });
-        }
+        RxTextView.textChanges(etClientName).subscribe(charSequence -> client.setName(charSequence.toString()));
+        RxTextView.textChanges(etClientPhone).subscribe(charSequence -> client.setPhone(charSequence.toString()));
+        RxTextView.textChanges(etClientAddress).subscribe(charSequence -> client.setAddress(charSequence.toString()));
+        RxTextView.textChanges(etClientSocial).subscribe(charSequence -> client.setSocial(charSequence.toString()));
+        RxTextView.textChanges(etClientEmail).subscribe(charSequence -> client.setEmail(charSequence.toString()));
     }
 
     private void insertStartDateTimeButtonsFrag(Calendar initDate) {
@@ -431,13 +287,10 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.btnClientDetails:
-                if(expandableClientDetails.getLayoutParams().height == 0) {
-                    animate(expandableClientDetails, moveableLayout, 500, 0, 200);
-                } else {
-                    animate(expandableClientDetails, moveableLayout, 500, 0, -200);
-                }
+                boolean needToOpen = expandableClientDetails.getLayoutParams().height == 0;
+                animate(expandableClientDetails, moveableLayout, 500, 0, needToOpen ? 200 : -200);
                 break;
 
             case R.id.btnChooseClient:
@@ -504,8 +357,7 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
         }
     }
 
-    private void animate(final View scalableView, final View moveableView,
-                         int duration, int fromYDelta, int toYDelta) {
+    private void animate(final View scalableView, final View moveableView, int duration, int fromYDelta, int toYDelta) {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         Logger.d(LOG_TAG, "metrics.density: " + String.valueOf(metrics.density));
         fromYDelta *= metrics.density;
@@ -555,7 +407,7 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
     public void onDateOrTimeSet(Calendar newDate, int fragmentID) {
         switch (fragmentID) {
             case R.id.startDateTimePlaceHolder:
-                if(newDate.after(photoSession.getDeadline())) {
+                if (newDate.after(photoSession.getDeadline())) {
                     startDateTimeButtonsFrag.setDateTime(photoSession.getPhotoSessionDate());
                     Toast.makeText(getApplicationContext(), R.string.dateError1, Toast.LENGTH_SHORT).show();
                 } else {
@@ -564,7 +416,7 @@ public class PhotoSessionDetailsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.deadlineDateTimePlaceHolder:
-                if(newDate.before(photoSession.getPhotoSessionDate())) {
+                if (newDate.before(photoSession.getPhotoSessionDate())) {
                     endDateTimeButtonsFrag.setDateTime(photoSession.getDeadline());
                     Toast.makeText(getApplicationContext(), R.string.dateError2, Toast.LENGTH_SHORT).show();
                 } else {

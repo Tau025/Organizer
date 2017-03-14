@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
+import com.devtau.organizer.database.sources.TransactionsSource;
 import com.devtau.organizer.util.Util;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -106,6 +107,9 @@ public class PhotoSession implements Parcelable{
     };
 
 
+    public void calculateBalance(TransactionsSource source) {
+        balance = totalCost - source.getReceivedMoneyForAPhotoSession(this);
+    }
 
     //сеттеры
     public void setPhotoSessionID(long photoSessionID) {

@@ -97,6 +97,20 @@ public class TransactionsSource {
         return list;
     }
 
+    public int getReceivedMoneyForAPhotoSession(PhotoSession currentPhotoSession) {
+        int receivedMoney = 0;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sumQuery = "SUM(" + AMOUNT + ")";
+        String selectQuery = "SELECT " + sumQuery + " FROM " + TABLE_NAME
+                + " WHERE " + TASK_ID + "='" + String.valueOf(currentPhotoSession.getPhotoSessionID()) + "'";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            receivedMoney = cursor.getInt(cursor.getColumnIndex(sumQuery));
+        }
+        cursor.close();
+        return receivedMoney;
+    }
+
     public ArrayList<Transaction> getItemsList() {
         ArrayList<Transaction> list = new ArrayList<>();
         String sortMethod = "ASC";
